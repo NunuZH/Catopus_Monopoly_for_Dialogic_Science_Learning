@@ -114,7 +114,7 @@
             height: 100%; 
             max-width: calc(100vh * 16 / 9);
             max-height: calc(100vw * 9 / 16);
-            background: url('map_main.png') no-repeat center center; 
+            background: url('../Images/map_main.png') no-repeat center center; 
             background-size: 100% 100%; 
             container-type: inline-size;
         }
@@ -346,17 +346,17 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            pointer-events: none; /* 🌟 核心：允许鼠标事件穿透，绝对不挡点击 */
-            z-index: 4900;        /* 处于游戏UI和剧情层上方，但在一开始的登入框(5000)下方 */
+            pointer-events: none; 
+            z-index: 4900; 
         }
 
     </style>
 </head>
-<body style="background-image: url('map_main.png');">
+<body style="background-image: url('../Images/map_main.png');">
     
-    <audio id="bgm" src="calm_music.mp3" loop></audio>
-    <audio id="sfx-click" src="click.mp3"></audio>
-    <audio id="sfx-pay" src="pay.mp3"></audio>
+    <audio id="bgm" src="../Audio/calm_music.mp3" loop></audio>
+    <audio id="sfx-click" src="../Audio/click.mp3"></audio>
+    <audio id="sfx-pay" src="../Audio/pay.mp3"></audio>
     <canvas id="snow-canvas"></canvas>
 
  <div id="setup-screen" style="position: fixed; inset: 0; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
@@ -371,7 +371,7 @@
     </div>
 </div>
 
-<div id="prologue-screen" style="display: none; position: fixed; inset: 0; z-index: 4800; background: url('map_main.png') center/cover; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 50px;">
+<div id="prologue-screen" style="display: none; position: fixed; inset: 0; z-index: 4800; background: url('../Images/map_main.png') center/cover; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 50px;">
     <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.8);"></div> 
     
     <img src="章鱼猫.gif" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 80vh; z-index: 9990; filter: drop-shadow(5px 5px 20px black);">
@@ -384,7 +384,7 @@
     </div>
 </div>
 
-<div id="shop-screen" style="display: none; position: fixed; inset: 0; z-index: 4500; background: url('map_main.png') center/cover; flex-direction: column; align-items: center; justify-content: center;">
+<div id="shop-screen" style="display: none; position: fixed; inset: 0; z-index: 4500; background: url('../Images/map_main.png') center/cover; flex-direction: column; align-items: center; justify-content: center;">
     <div style="background: var(--card-bg); backdrop-filter: blur(10px); padding: 40px; border-radius: 15px; border: 2px solid var(--ink); box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 800px;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); padding-bottom: 15px; margin-bottom: 15px;">
             <h2 style="margin: 0; color: var(--bold-text);">🔬 物理器材采购</h2>
@@ -443,39 +443,39 @@
 
 <div id="main-map">
     <div id="node-school" class="map-node" style="top:18%; left:10%;" onclick="goTo('school')">
-        <img src="icon_school.png" class="node-icon" alt="学校">
-        <img src="selected.png" class="selected-bg">
-        <img src="qq李晞棠.png" class="qq-avatar">
+        <img src="../Images/icon_school.png" class="node-icon" alt="学校">
+        <img src="../Images/selected.png" class="selected-bg">
+        <img src="../Images/qq李晞棠.png" class="qq-avatar">
         <div class="node-label">学校</div>
     </div>
     <div id="node-clinic" class="map-node" style="top:22%; left:48%;" onclick="goTo('clinic')">
-        <img src="icon_clinic.png" class="node-icon" alt="医院">
-        <img src="selected.png" class="selected-bg">
-        <img src="章鱼猫.gif" class="qq-avatar" style="transform: scale(2.0);";>
+        <img src="../Images/icon_clinic.png" class="node-icon" alt="医院">
+        <img src="../Images/selected.png" class="selected-bg">
+        <img src="../Images/章鱼猫.gif" class="qq-avatar" style="transform: scale(2.0);";>
         <div class="node-label">医院</div>
     </div>
     <div id="node-lab" class="map-node" style="top:65%; left:6%;" onclick="goTo('lab')">
-        <img src="icon_lab.png" class="node-icon" alt="实验室">
-        <img src="selected.png" class="selected-bg">
-        <img src="qq钱澈.png" class="qq-avatar">
+        <img src="../Images/icon_lab.png" class="node-icon" alt="实验室">
+        <img src="../Images/selected.png" class="selected-bg">
+        <img src="../Images/qq钱澈.png" class="qq-avatar">
         <div class="node-label">实验室</div>
     </div>
     <div id="node-factory" class="map-node" style="top:55%; left:31%;" onclick="goTo('factory')">
-        <img src="icon_factory.png" class="node-icon" alt="工厂">
-        <img src="selected.png" class="selected-bg">
-        <img src="qq卡尔.png" class="qq-avatar">
+        <img src="../Images/icon_factory.png" class="node-icon" alt="工厂">
+        <img src="../Images/selected.png" class="selected-bg">
+        <img src="../Images/qq卡尔.png" class="qq-avatar">
         <div class="node-label">工厂</div>
     </div>
     <div id="node-office" class="map-node" style="top:30%; left:78%;" onclick="goTo('office')">
-        <img src="icon_office.png" class="node-icon" alt="办公室">
-        <img src="selected.png" class="selected-bg">
-        <img src="qq温既明.png" class="qq-avatar">
+        <img src="../Images/icon_office.png" class="node-icon" alt="办公室">
+        <img src="../Images/selected.png" class="selected-bg">
+        <img src="../Images/qq温既明.png" class="qq-avatar">
         <div class="node-label">办公室</div>
     </div>
     <div id="node-wharf" class="map-node" style="top:53%; left:61%;" onclick="goTo('wharf')">
-        <img src="icon_wharf.png" class="node-icon" alt="码头">
-        <img src="selected.png" class="selected-bg">
-        <img src="qq孙岫云.png" class="qq-avatar">
+        <img src="../Images/icon_wharf.png" class="node-icon" alt="码头">
+        <img src="../Images/selected.png" class="selected-bg">
+        <img src="../Images/qq孙岫云.png" class="qq-avatar">
         <div class="node-label">码头</div>
     </div>
 </div>
@@ -608,8 +608,8 @@
             // 1. 码头 - 孙岫云
             wharf: {
                 name: "孙岫云 (码头)",
-                sprite: "孙岫云.png",
-                bg: "wharf_bg.png",
+                sprite: "../Images/孙岫云.png",
+                bg: "../Images/wharf_bg.png",
                 intro: [
                     `“冬天海风吹起来还是有点冷啊。${player.name}，你是来调查那个飞跃峡谷的包裹吗？”`,
                     "“哇哦，那可太酷了！不过我可一直在码头吹风，什么都不知道哦~”"
@@ -649,8 +649,8 @@
             // 2. 学校 - 李晞棠
             school: {
                 name: "李晞棠 (学校)",
-                sprite: "李晞棠.png",
-                bg: "school_bg.png",
+                sprite: "../Images/李晞棠.png",
+                bg: "../Images/school_bg.png",
                 intro: [
                     `“${player.name}，你也是来调查那个飞跃峡谷的包裹吗？”`,
                     "“今早艾吹牛老师在操场吹了一上午牛，说那是他的杰作！还要求我们必须赞美他“无敌的肱二头肌”呢！”",
@@ -708,8 +708,8 @@
             // 3. 实验室 - 钱澈
             lab: {
                 name: "钱澈 (实验室)",
-                sprite: "钱澈.png",
-                bg: "lab_bg.png",
+                sprite: "../Images/钱澈.png",
+                bg: "../Images/lab_bg.png",
                 intro: [
                     `“${player.name}，外面的风雪虽然停了，但镇上的流言却满天飞。”`,
                     "“作为研究者，我只相信数据和事实。如果你搜集到了确凿的物理证据，可以放在我的实验台上。我很乐意和你一起分析。”"
@@ -776,8 +776,8 @@
             // 4. 医院 - 温远山
             clinic: {
                 name: "温远山 (医院)",
-                sprite: "温远山.png",
-                bg: "clinic_bg.png",
+                sprite: "../Images/温远山.png",
+                bg: "../Images/clinic_bg.png",
                 intro: [
                     "“暴风雪过后的诊所真是忙得不可开交。你也是来打听昨晚空投包裹的事情吗？”",
                     "“奥托爷爷三十年前冒死救了全镇人，即使真有人违规给他送药送汤，我肯定也是一百个支持！”",
@@ -805,8 +805,8 @@
             // 5. 工厂 - 卡尔
             factory: {
                 name: "卡尔 (工厂)",
-                sprite: "卡尔.png",
-                bg: "factory_bg.png",
+                sprite: "../Images/卡尔.png",
+                bg: "../Images/factory_bg.png",
                 intro: [
                     "“别吵我，我正忙着清点风雪后高压阀门的库存呢。”"
                 ],
@@ -891,8 +891,8 @@
             // 6. 办公室 - 温既明
             office: {
                 name: "温既明 (办公室)",
-                sprite: "温既明.png",
-                bg: "office_bg.png",
+                sprite: "../Images/温既明.png",
+                bg: "../Images/office_bg.png",
                 intro: [
                     `温既明脸色有些苍白，端起杯子抿了一口咖啡：“${player.name}，大雪封山，任何私人行动都是违规的。”`,
                     "“如果没有充分、确凿的证据，请不要妨碍我处理全镇的配给账本。”"
