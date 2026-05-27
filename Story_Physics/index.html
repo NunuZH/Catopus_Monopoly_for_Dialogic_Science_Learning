@@ -566,7 +566,7 @@
         { id: "item4", name: "卷尺", price: 50, desc: "便携软尺，适合去野外实地测长宽高与深度" },
         { id: "item17", name: "木质米尺", price: 70, desc: "实验室标准硬尺，质地坚硬且质量分布极其均匀" },
         { id: "item7", name: "支点底座", price: 50, desc: "用于支撑长条形物体，搭建平衡系统" },
-        { id: "item2", name: "带刻度量筒", price: 200, desc: "利用排水法精确测量体积 (V)" },
+        { id: "item2", name: "带刻度量筒与水", price: 200, desc: "利用排水法精确测量体积 (V)" },
         { id: "item5", name: "烧杯与水", price: 50,  desc: "提供标准液体环境" },
         { id: "item11", name: "速干石膏粉", price: 80, desc: "法医级倒模材料，可完美拓印现场凹坑" },
         { id: "item10", name: "高精度温度计", price: 100, desc: "精确测量液体温度变化 (ΔT)" },
@@ -1060,7 +1060,7 @@
 
         if (!hasDensity) {
             // 解法 1：现代直测流
-            if (inv.includes("电子天平") && inv.includes("带刻度量筒")) {
+            if (inv.includes("电子天平") && inv.includes("带刻度量筒与水")) {
                 player.inventory.push({ 
                     title: "【物理实验报告】密度测试", 
                     desc: "【常规法数据】利用电子天平测得碎块质量 m = 314.0g，量筒测得排开水体积 V = 40.0cm³。" 
@@ -1068,7 +1068,7 @@
                 newReports++;
             } 
             // 解法 2：传统机械流
-            else if (inv.includes("托盘天平") && inv.includes("标准砝码组") && inv.includes("带刻度量筒")) {
+            else if (inv.includes("托盘天平") && inv.includes("标准砝码组") && inv.includes("带刻度量筒与水")) {
                 player.inventory.push({ 
                     title: "【物理实验报告】密度测试", 
                     desc: "【机械天平数据】利用托盘天平与标准砝码组测得碎块质量 m = 314.0g，量筒测得排开水体积 V = 40.0cm³。" 
@@ -1084,7 +1084,7 @@
                 newReports++;
             }
             // 解法 4：极客杠杆流
-            else if (inv.includes("木质米尺") && inv.includes("支点底座") && inv.includes("标准砝码组") && inv.includes("带刻度量筒")) {
+            else if (inv.includes("木质米尺") && inv.includes("支点底座") && inv.includes("标准砝码组") && inv.includes("带刻度量筒与水")) {
                 player.inventory.push({ 
                     title: "【物理实验报告】密度测试", 
                     desc: "【力矩平衡法数据】利用米尺搭建杠杆系统，配合砝码推算出质量为 314.0g，量筒测得排开水体积 V = 40.0cm³。" 
@@ -1143,7 +1143,7 @@
                 newReports++;
             }
             // 解法 2：法医石膏倒模 + 排水法
-            else if (inv.includes("速干石膏粉") && inv.includes("带刻度量筒")) {
+            else if (inv.includes("速干石膏粉") && inv.includes("带刻度量筒与水")) {
                 player.inventory.push({ 
                     title: "【物理实验报告】冰坑尺寸测定", 
                     desc: "【倒模排水法】向冰坑内注入石膏得到坚硬模型，将其投入大型量筒后，液面刚好上升 1000cm³，得出冰坑真实体积。" 
