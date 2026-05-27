@@ -1099,7 +1099,7 @@
             const hasMassTool = inv.includes("电子天平") || (inv.includes("托盘天平") && inv.includes("标准砝码组"));
 
             // 解法 1：直拉法（测力计提供拉力）
-            if (hasRuler && inv.includes("弹簧测力计")) {
+            if (hasRuler) {
                 player.inventory.push({ 
                     title: "【物理实验报告】劲度系数", 
                     desc: "【测力计拉伸法】使用弹簧测力计水平拉动橡胶带，当测力计读数为 50N 时，测得橡胶带伸长量 Δx = 0.1m。" 
