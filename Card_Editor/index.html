@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>教学剧本与卡牌编辑器</title>
+    <style>
+        :root {
+            --paper: #fdfaf5;
+            --ink: #2b2b2b;
+            --vermilion: #8c2727;
+            --jade: #3d5a45;
+            --ochre: #b58235;
+            --blue: #3c5a82;
+            --gray: #e8e8e8;
+        }
+        body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; background: #e0e0e0; color: var(--ink); display: flex; height: 100vh; overflow: hidden; }
+        
+        /* 顶部导航栏 */
+        .header { position: absolute; top: 0; left: 0; width: 100%; height: 60px; background: var(--ink); color: var(--paper); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header h1 { margin: 0; font-size: 20px; letter-spacing: 1px; font-weight: 600; }
+        .header-btns button { background: transparent; border: 1px solid var(--paper); color: var(--paper); padding: 6px 15px; border-radius: 4px; cursor: pointer; margin-left: 10px; transition: 0.2s; font-size: 14px; }
+        .header-btns button:hover { background: var(--paper); color: var(--ink); }
+        .btn-highlight { background: var(--ochre) !important; border-color: var(--ochre) !important; color: white !important; font-weight: bold; }
+        .dropdown { position: relative; display: inline-block; margin-left: 10px; }
+        .dropbtn { background: transparent; border: 1px solid var(--paper); color: var(--paper); padding: 6px 15px; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .dropbtn:hover { background: var(--paper); color: var(--ink); }
+        .dropdown-content { 
+            display: none; 
+            position: absolute; 
+            right: 0; 
+            top: 100%; 
+            background-color: white; 
+            min-width: 140px; 
+            box-shadow: 0px 8px 20px rgba(0,0,0,0.15); 
+            z-index: 200; 
+            border-radius: 6px; 
+            overflow: hidden; 
+            margin-top: 5px; 
+            border: 1px solid #ccc;
+        }
+        .header-btns .dropdown-content button { 
+            color: var(--ink); 
+            padding: 10px 16px; 
+            display: block; 
+            width: 100%; 
+            text-align: left; 
+            border: none; 
+            margin: 0; 
+            border-radius: 0; 
+            background: white; 
+            font-size: 14px;
+        }
+        .header-btns .dropdown-content button:hover { background-color: #f0f8ff; color: var(--blue); }
+        .header-btns .dropdown-content .dropdown-divider { height: 1px; background-color: #eee; margin: 2px 0; }
+        .dropdown-content.show { display: block; }
+
+        .container { display: flex; width: 100%; margin-top: 60px; height: calc(100vh - 60px); }
+        
+        /* 左侧：档案柜 */
+        .sidebar { width: 300px; background: white; border-right: 2px solid #ccc; display: flex; flex-direction: column; overflow: hidden; }
+        .sidebar-header { padding: 15px; background: #f5f5f5; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .btn-add { background: var(--jade); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-add-quest { background: var(--vermilion); margin-right: 5px; }
+        .list-container { flex: 1; overflow-y: auto; padding: 10px; }
+        .category-title { font-size: 13px; color: #888; font-weight: bold; margin: 15px 0 5px 5px; border-bottom: 1px dashed #ccc; padding-bottom: 3px; }
+        .list-item { padding: 10px; margin-bottom: 5px; border: 1px solid #eee; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.2s; background: #fafafa; }
+        .list-item:hover { border-color: var(--blue); background: #f0f8ff; }
+        .list-item.active { background: var(--blue); color: white; border-color: var(--blue); }
+        
+        /* 右侧：编辑区 (修复了Flex塌陷问题) */
+        .editor-area { flex: 1; background: var(--paper); padding: 40px; overflow-y: auto; display: block; }
+        .editor-content { width: 100%; max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid #ccc; position: relative; height: fit-content; min-height: 400px; }
+        
+        /* 表单样式 */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--ink); font-size: 15px; }
+        .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 15px; transition: 0.3s; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--blue); outline: none; background: #f8fbff; }
+        
+        /* 无代码悬赏规则生成器 (胶囊式紧凑布局) */
+        .rule-builder { border: 2px dashed #bbb; padding: 15px; background: #fffcf5; border-radius: 8px; }
+        .rule-path { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; background: white; border-radius: 6px; position: relative; }
+        .rule-cond-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .rule-cond { display: inline-flex; align-items: center; background: #f4f4f4; border: 1px solid #ddd; border-radius: 6px; padding: 4px 12px; font-size: 13px; gap: 5px; }
+        .rule-cond select { border: none; background: transparent; font-size: 13px; font-weight: bold; outline: none; cursor: pointer; padding: 0; width: auto; }
+        .rule-cond input { border: none; background: transparent; font-size: 13px; outline: none; width: 100px; border-bottom: 1px dashed #999; border-radius: 0; padding: 2px; }
+        .btn-rule { background: #eee; border: 1px solid #ccc; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-size: 13px; transition: 0.2s; }
+        .btn-rule:hover { background: #ddd; }
+        .btn-rule-del { background: transparent; border: none; color: #999; cursor: pointer; font-size: 14px; padding: 0 5px; }
+        .btn-rule-del:hover { color: var(--vermilion); }
+        .btn-path-del { position: absolute; right: 5px; top: 5px; color: var(--vermilion); border-color: var(--vermilion); background: #fff0f0; }
+        .btn-path-del:hover { background: var(--vermilion); color: white; }
+        
+        .tag-hint-box { background: #eef7ee; border: 1px solid var(--jade); border-radius: 6px; padding: 12px; margin-top: 10px; font-size: 13px; color: var(--ink); line-height: 1.6; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 10px; width: 80%; max-width: 700px; max-height: 80vh; overflow-y: auto; text-align: center; }
+        .modal-box textarea { width: 100%; height: 300px; margin-top: 15px; font-family: monospace; font-size: 14px; padding: 10px; box-sizing: border-box; border: 2px solid var(--ochre); }
+        
+        .btn-primary { background: var(--blue); color: white; border: none; padding: 10px 20px; font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-danger { background: var(--vermilion); color: white; border: none; padding: 10px 20px; font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1 id="ui-title">⚙️ 教学剧本与卡牌编辑器</h1>
+    <div class="header-btns">
+        <div class="dropdown">
+            <button class="dropbtn" id="ui-btn-menu" onclick="toggleMenu(event)">⚙️ 菜单</button>
+            
+            <div class="dropdown-content" id="myDropdown">
+                <button onclick="toggleLang()" id="ui-btn-lang">🌐 EN / 中文</button>
+                <button onclick="openImportModal()" id="ui-btn-import">📥 导入数据</button>
+                <button onclick="exportJSON()" id="ui-btn-json">💾 导出 JSON</button>
+                <div class="dropdown-divider"></div>
+                <button id="ui-btn-reset" onclick="resetDatabase()" style="color: var(--vermilion);">🗑 清空数据</button>
+            </div>
+        </div>
+        
+        <button class="btn-highlight" onclick="exportExcel()" id="ui-btn-excel">📤 导出 Excel</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <span id="ui-archive">📚 档案柜</span>
+            <div>
+                <button class="btn-add btn-add-quest" onclick="createNew('quest')" id="ui-btn-quest">🎯 课题</button>
+                <button class="btn-add" onclick="createNew('card')" id="ui-btn-card">🃏 卡片</button>
+            </div>
+        </div>
+        <div class="list-container" id="sidebar-list">
+            </div>
+    </div>
+    
+    <div class="editor-area">
+        <div class="editor-content" id="editor-content">
+            <h2 id="ui-empty" style="color:#ccc; text-align:center; margin-top:150px;">👈 请在左侧选择或新建项目/卡片进行编辑</h2>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="io-modal">
+    <div class="modal-box">
+        <h2 id="io-title" style="margin-top:0;">系统枢纽</h2>
+        <p id="io-desc" style="color:#666;">请在此处粘贴或复制数据。</p>
+        <textarea id="io-textarea"></textarea>
+        <div style="margin-top: 20px;">
+            <button class="btn-primary" id="io-confirm-btn" onclick="confirmImport()">确认导入</button>
+            <button class="btn-danger" id="io-close-btn" onclick="closeModal()" style="margin-left: 10px;">关闭</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ====== 字典配置 ======
+    const dict = {
+        zh: {
+            btnMenu: "⚙️ 菜单", title: "教学剧本与卡牌编辑器", btnImport: "📥 导入数据", btnJson: "💾 导出 JSON", btnExcel: "📤 导出 Excel",
+            archive: "📚 档案柜", btnQuest: "🎯 课题", btnCard: "🃏 卡片",
+            empty: "👈 请在左侧选择或新建项目/卡片进行编辑",
+            catQuests: "🎯 课题项目", catCards: "📁 卡片分类",
+            unnamedQuest: "未命名课题", unnamedCard: "未命名卡片",
+            delQuest: "🗑️ 删除该课题", delCard: "🗑️ 删除该卡片",
+            qTitle: "课题标题 (Title)", qDesc: "背景要求描述 (Description)",
+            cTitle: "卡片名称 (Title)", cDesc: "卡片描述 (Description)", cCat: "分类 (Category)", cTier: "级别 (Tier)",
+            cTags: "标签 (Tags - 选填)", tagSub: "如果有多个标签，请用英文逗号分隔。",
+            tierBase: "基础 (Base - 开局平分)", tierAdv: "进阶 (Advanced - 放入集市)",
+            newCat: "-- 添加新分类 --", promptCat: "请输入新的分类名称 (英文或拼音最佳):",
+            ruleTitle: "🏅 论证通关条件 (规则生成器)", ruleNone: "(当前没有任何限制，提交任意卡片即可通关)",
+            pathPrefix: "路径", pathSuffix: "(满足以下条件即可):", delPath: "删除路径",
+            must: "🎯 必须包含", ban: "🚫 绝对禁止", base: "📌 基础包含",
+            addCond: "+ 添加条件 (AND)", addPath: "➕ 添加新通关路径 (OR)", or: "或者 (OR)",
+            tagHint: "💡 课题提示：当前课题需要的标签如下：", tagHintNone: "当前没有课题设置了标签限制。",
+            delConfirm: "确定要删除这项数据吗？",
+            ioImpTitle: "📥 从 Excel 导入数据", ioImpDesc: "格式：[类别(或填quest)] | [名称] | [描述] | [级别base/advanced] | [标签]",
+            ioJsonTitle: "💾 导出为系统 JSON", ioJsonDesc: "将这段代码保存在 TXT 文件中，以防丢失备份。",
+            ioExcTitle: "📤 导出游戏最终代码", ioExcDesc: "全选并复制下方文字，粘贴到游戏本体的【教学数据配置中心】即可开玩！",
+            btnConfirm: "确认导入", btnClose: "关闭", msgImp: "导入解析完毕！",
+            mustCat: "🎯 必须包含", banCat: "🚫 禁止包含", 
+            addTagCond: "🏷 添加标签条件", addCatCond: "📂 添加类型条件", 
+            btnReset: "🗑 清空数据", warnReset: "⚠️ 这将删除所有卡片、课题和存档。\n\n此操作无法撤销。\n\n确定继续吗？",
+            msgReset: "已清空所有数据", warnImport: "⚠️ 导入新数据将覆盖当前所有卡片、课题和规则。\n\n是否继续？"
+        },
+        en: {
+            btnMenu: "⚙️ Menu", title: "Scenario & Card Editor", btnImport: "📥 Import", btnJson: "💾 Export JSON", btnExcel: "📤 Export Excel",
+            archive: "📚 Archive", btnQuest: "🎯 Quest", btnCard: "🃏 Card",
+            empty: "👈 Select or create an item on the left to edit",
+            catQuests: "🎯 Quests", catCards: "📁 Categories",
+            unnamedQuest: "Unnamed Quest", unnamedCard: "Unnamed Card",
+            delQuest: "🗑️ Delete Quest", delCard: "🗑️ Delete Card",
+            qTitle: "Quest Title", qDesc: "Background Description",
+            cTitle: "Card Title", cDesc: "Card Description", cCat: "Category", cTier: "Tier",
+            cTags: "Tags (Optional)", tagSub: "Use English commas to separate multiple tags.",
+            tierBase: "Base (Start evenly)", tierAdv: "Advanced (In Market)",
+            newCat: "-- Add New Category --", promptCat: "Enter new category name:",
+            ruleTitle: "🏅 Clearance Conditions (Rule Builder)", ruleNone: "(No restrictions. Any card will pass.)",
+            pathPrefix: "Path", pathSuffix: "(Satisfy the following):", delPath: "Delete Path",
+            must: "🎯 Must Include", ban: "🚫 Strictly Ban", base: "📌 Base Include",
+            addCond: "+ Add Cond (AND)", addPath: "➕ Add New Path (OR)", or: "OR",
+            tagHint: "💡 Tag Reference: Required tags for your current quests:", tagHintNone: "No quests currently require specific tags.",
+            delConfirm: "Are you sure you want to delete this?",
+            ioImpTitle: "📥 Import from Excel", ioImpDesc: "Format: [Type/quest] | [Title] | [Desc] | [Tier] | [Tags]",
+            ioJsonTitle: "💾 Export JSON Backup", ioJsonDesc: "Save this text in a TXT file as a secure backup.",
+            ioExcTitle: "📤 Export Game Code", ioExcDesc: "Copy everything below and paste it into the game's Database Center!",
+            btnConfirm: "Confirm", btnClose: "Close", msgImp: "Import successful!",
+            mustCat: "🎯 Must Include", banCat: "🚫 MustNot Include",
+            addTagCond: "🏷 Add Tag Cond", addCatCond: "📂 Add Category Cond",
+            btnReset: "🗑 Clear Data", warnReset: "⚠️ This will delete all cards, quests, and saves.\n\nThis action cannot be undone.\n\nContinue?",
+            msgReset: "All data cleared.", warnImport: "⚠️ Importing new data will overwrite all current cards, quests, and rules.\n\nContinue?"
+        }
+    };
+
+    let currentLang = 'zh';
+    function t(key) { return dict[currentLang][key]; }
+
+    function toggleLang() {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        updateStaticUI();
+        renderSidebar();
+        if (currentEditId) {
+            editItem(currentEditId, currentEditType);
+        } else {
+            document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+        }
+    }
+
+    function updateStaticUI() {
+        document.getElementById('ui-title').innerText = t('title');
+        document.getElementById('ui-btn-import').innerText = t('btnImport');
+        document.getElementById('ui-btn-json').innerText = t('btnJson');
+        document.getElementById('ui-btn-excel').innerText = t('btnExcel');
+        document.getElementById('ui-archive').innerText = t('archive');
+        document.getElementById('ui-btn-quest').innerText = t('btnQuest');
+        document.getElementById('ui-btn-card').innerText = t('btnCard');
+        document.getElementById('io-confirm-btn').innerText = t('btnConfirm');
+        document.getElementById('io-close-btn').innerText = t('btnClose');
+        document.getElementById('ui-btn-reset').innerText = t('btnReset');
+        document.getElementById('ui-btn-menu').innerText = t('btnMenu');
+    }
+    
+    let database = { quests: [], cards: [] };
+    let currentEditId = null;
+    let currentEditType = null;
+
+    function generateId() { return Math.random().toString(36).substr(2, 8); }
+
+    function renderSidebar() {
+        const list = document.getElementById('sidebar-list');
+        list.innerHTML = '';
+
+        list.innerHTML += `<div class="category-title">${t('catQuests')} - ${database.quests.length}</div>`;
+        database.quests.forEach(q => {
+            const active = (currentEditId === q.id) ? 'active' : '';
+            list.innerHTML += `<div class="list-item ${active}" onclick="editItem('${q.id}', 'quest')"><b>${q.title || t('unnamedQuest')}</b></div>`;
+        });
+
+        let categories = {};
+        database.cards.forEach(c => {
+            if (!categories[c.category]) categories[c.category] = [];
+            categories[c.category].push(c);
+        });
+
+        for (let cat in categories) {
+            list.innerHTML += `<div class="category-title">📁 ${cat} - ${categories[cat].length}</div>`;
+            categories[cat].forEach(c => {
+                const active = (currentEditId === c.id) ? 'active' : '';
+                list.innerHTML += `<div class="list-item ${active}" onclick="editItem('${c.id}', 'card')">[${c.tier === 'advanced'?'Adv':'Base'}] ${c.title || t('unnamedCard')}</div>`;
+            });
+        }
+    }
+
+    function createNew(type) {
+        if (type === 'quest') {
+            const newItem = { id: generateId(), title: '', desc: '', rules: [] };
+            database.quests.push(newItem);
+            editItem(newItem.id, 'quest');
+        } else {
+            const newItem = { id: generateId(), category: 'Theory', title: '', desc: '', tier: 'base', tags: '' };
+            database.cards.push(newItem);
+            editItem(newItem.id, 'card');
+        }
+        autoSave();
+        renderSidebar();
+    }
+
+    function editItem(id, type) {
+        saveCurrentEdit();
+        currentEditId = id;
+        currentEditType = type;
+        renderSidebar();
+
+        const editor = document.getElementById('editor-content');
+        if (type === 'quest') {
+            const item = database.quests.find(q => q.id === id);
+            renderQuestEditor(item, editor);
+        } else {
+            const item = database.cards.find(c => c.id === id);
+            renderCardEditor(item, editor);
+        }
+    }
+
+    function saveCurrentEdit() {
+        if (!currentEditId) return;
+        if (currentEditType === 'quest') {
+            const item = database.quests.find(q => q.id === currentEditId);
+            if(item) {
+                item.title = document.getElementById('edit-title').value;
+                item.desc = document.getElementById('edit-desc').value;
+            }
+        } else if (currentEditType === 'card') {
+            const item = database.cards.find(c => c.id === currentEditId);
+            if(item) {
+                item.title = document.getElementById('edit-title').value;
+                item.desc = document.getElementById('edit-desc').value;
+                item.category = document.getElementById('edit-category').value;
+                item.tier = document.getElementById('edit-tier').value;
+                item.tags = document.getElementById('edit-tags').value;
+            }
+        }
+        autoSave();
+    }
+
+    function deleteCurrent() {
+        if (!confirm(t('delConfirm'))) return;
+        if (currentEditType === 'quest') {
+            database.quests = database.quests.filter(q => q.id !== currentEditId);
+        } else {
+            database.cards = database.cards.filter(c => c.id !== currentEditId);
+        }
+        currentEditId = null;
+        currentEditType = null;
+        document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+        autoSave();
+        renderSidebar();
+    }
+
+    function autoSave() { localStorage.setItem('questCardDatabase', JSON.stringify(database));}
+    
+    function autoLoad() {
+        let saved = localStorage.getItem('questCardDatabase');
+        if (!saved) return;
+        try {
+            database = JSON.parse(saved);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderCardEditor(item, container) {
+        let allCategories = [...new Set(database.cards.map(c => c.category)), 'Theory', 'Experiment', 'Phenomenon'];
+        let catOptions = [...new Set(allCategories)].map(cat => `<option value="${cat}" ${item.category===cat?'selected':''}>${cat}</option>`).join('');
+        
+        let matches = getMatchingQuests(item);
+        let matchHTML = matches.length > 0
+            ? matches.map(m => `<span onclick="openQuestEditor('${m.id}')" style="background:#e3f2fd; padding:3px 8px; border-radius:4px; margin-right:5px; border:1px solid #bbdefb; font-size:12px; display:inline-block; margin-bottom:5px; cursor:pointer;">🎯 ${m.title}</span>`).join('')
+            : '';
+        container.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h2 style="color:var(--jade); margin:0;">🃏 ${t('cTitle').split(' ')[0]}</h2>
+            </div>
+            <div class="form-group">
+                <label>${t('cTitle')}</label>
+                <input type="text" id="edit-title" value="${item.title}" onchange="saveCurrentEdit(); renderSidebar();">
+            </div>
+            <div class="form-group">
+                <label>${t('cDesc')}</label>
+                <textarea id="edit-desc" rows="3" onchange="saveCurrentEdit();">${item.desc}</textarea>
+            </div>
+            <div style="display:flex; gap: 20px;">
+                <div class="form-group" style="flex:1;">
+                    <label>${t('cCat')}</label>
+                    <select id="edit-category" onchange="handleCategoryChange(this)">
+                        ${catOptions}
+                        <option value="_new">${t('newCat')}</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>${t('cTier')}</label>
+                    <select id="edit-tier" onchange="saveCurrentEdit(); renderSidebar();">
+                        <option value="base" ${item.tier==='base'?'selected':''}>${t('tierBase')}</option>
+                        <option value="advanced" ${item.tier==='advanced'?'selected':''}>${t('tierAdv')}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>${t('cTags')}</label>
+                <input type="text" id="edit-tags" value="${item.tags}" placeholder="Link back to your Quests..." onchange="saveCurrentEdit(); editItem('${item.id}', 'card');">
+                <span style="font-size:12px; color:#888;">${t('tagSub')}</span>
+                <div class="tag-hint-box" style="margin-top:10px;">
+                    <strong>匹配课题：</strong><br>
+                    <div style="margin-top:5px;">${matchHTML}</div>
+                </div>
+            </div>
+            <div style="text-align:right; border-top: 1px solid #ccc; padding-top: 20px; margin-top: 20px;">
+                <button class="btn-danger" onclick="deleteCurrent()">${t('delCard')}</button>
+            </div>
+        `;
+    }
+
+    let currentRuleData = [];
+
+    function renderQuestEditor(item, container) {
+        currentRuleData = item.rules || []; 
+        let cardMatches = getMatchingCards(item.rules);
+        let cardHTML = cardMatches.length > 0 
+            ? cardMatches.map(c => `<span onclick="openCardEditor('${c.id}')" style="background:#fff3e0; padding:3px 8px; border-radius:4px; margin-right:5px; border:1px solid #ffe0b2; font-size:12px; display:inline-block; margin-bottom:5px; cursor:pointer;">🃏 ${c.title}</span>`).join('') 
+            : '';
+        container.innerHTML = `
+            <div style="margin-bottom: 20px;">
+                <h2 style="color:var(--vermilion); margin:0;">🎯 ${t('qTitle').split(' ')[0]}</h2>
+            </div>
+            <div class="form-group">
+                <label>${t('qTitle')}</label>
+                <input type="text" id="edit-title" value="${item.title}" onchange="saveCurrentEdit(); renderSidebar();">
+            </div>
+            <div class="form-group">
+                <label>${t('qDesc')}</label>
+                <textarea id="edit-desc" rows="3" onchange="saveCurrentEdit();">${item.desc}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>${t('ruleTitle')}</label>
+                <div class="rule-builder" id="rule-builder-container"></div>
+            </div>
+
+            <div class="tag-hint-box" style="border: 1px solid var(--ochre); background:#fffcf5;">
+                <strong>匹配卡片：</strong><br>
+                <div style="margin-top:5px;">${cardHTML}</div>
+            </div>
+
+            <div style="text-align:right; border-top: 1px solid #ccc; padding-top: 20px; margin-top: 20px;">
+                <button class="btn-danger" onclick="deleteCurrent()">${t('delQuest')}</button>
+            </div>
+        `;
+        renderRuleBuilder();
+    }
+
+    function renderRuleBuilder() {
+        const rb = document.getElementById('rule-builder-container');
+        rb.innerHTML = '';
+
+        if (currentRuleData.length === 0) {
+            rb.innerHTML = `<p style="color:#666; font-size:14px; margin:5px 0;">${t('ruleNone')}</p>`;
+        }
+
+        currentRuleData.forEach((path, pIdx) => {
+            let pathHTML = `<div class="rule-path">
+                <strong style="color:var(--blue);">${t('pathPrefix')} ${pIdx + 1} ${t('pathSuffix')}</strong>
+                <button class="btn-rule btn-path-del" title="${t('delPath')}" onclick="removePath(${pIdx})">✖ ${t('delPath')}</button>
+                <div class="rule-cond-container">`;
+            
+            path.forEach((cond, cIdx) => {
+                if (cond.scope === 'tag') {
+                    pathHTML += `
+                        <div class="rule-cond">🏷<input type="text" value="${cond.val}" onchange="updateCond(${pIdx},${cIdx},'val',this.value)">
+                            <button class="btn-rule-del" onclick="removeCond(${pIdx},${cIdx})">✖</button>
+                        </div>`;
+                } else {
+                    let ruleCats = [];
+                    currentRuleData.forEach(p => p.forEach(c => {
+                        if (c.scope === 'category' && c.val) ruleCats.push(c.val);
+                    }));
+                    let allCategories = [...new Set([...database.cards.map(card => card.category), ...ruleCats, 'Theory', 'Experiment', 'Phenomenon'])];
+                    let catOpts = allCategories.map(cat => `<option value="${cat}" ${cond.val===cat?'selected':''}>${cat}</option>`).join('');
+
+                    pathHTML += `
+                        <div class="rule-cond">
+                            <select onchange="updateCond(${pIdx},${cIdx},'type',this.value)">
+                                <option value="must" ${cond.type === 'must' ? 'selected' : ''}>${t('mustCat')}</option>
+                                <option value="ban" ${cond.type === 'ban' ? 'selected' : ''}>${t('banCat')}</option>
+                            </select>
+                            
+                            <select onchange="handleQuestCategoryChange(${pIdx}, ${cIdx}, this)">
+                                <option value="" disabled ${!cond.val?'selected':''}>- Select Category -</option>
+                                ${catOpts}
+                                <option value="_new">${t('newCat')}</option>
+                            </select>
+                            
+                            <button class="btn-rule-del" onclick="removeCond(${pIdx},${cIdx})">✖</button>
+                        </div>`;
+                }
+            });
+
+            pathHTML += `<button class="btn-rule" style="border-style:dashed;" onclick="addCond(${pIdx},'tag')">${t('addTagCond')}</button>
+            <button class="btn-rule" style="border-style:dashed;" onclick="addCond(${pIdx},'category')">${t('addCatCond')}</button>`;
+            
+            if (pIdx < currentRuleData.length - 1) {
+                pathHTML += `<div style="text-align:center; font-weight:bold; color:var(--ochre); margin: 5px 0;"> ${t('or')} </div>`;
+            }
+            rb.innerHTML += pathHTML;
+        });
+
+        rb.innerHTML += `<div style="margin-top:15px; text-align:center;"><button class="btn-rule" style="background:#fffbea; border-color:var(--ochre); color:var(--ochre); font-weight:bold; padding: 8px 15px;" onclick="addPath()">${t('addPath')}</button></div>`;
+
+        if(currentEditId && currentEditType === 'quest') {
+            database.quests.find(q => q.id === currentEditId).rules = currentRuleData;
+        }
+    }
+
+    function addPath() { currentRuleData.push([]); renderRuleBuilder(); }
+    function removePath(p) { currentRuleData.splice(p, 1); renderRuleBuilder(); }
+    
+    function addCond(p, kind='tag') {
+        if (kind === 'tag') {
+            currentRuleData[p].push({
+                scope:'tag',
+                val:''
+            });
+        } else {
+            currentRuleData[p].push({
+                scope:'category',
+                type:'must',
+                val:''
+            });
+        }
+        renderRuleBuilder();
+    }
+    
+    function removeCond(p, c) { currentRuleData[p].splice(c, 1); renderRuleBuilder(); }
+    function updateCond(p, c, key, val) { currentRuleData[p][c][key] = val; renderRuleBuilder(); }
+
+    function buildTargetTagString(rules) {
+        if (!rules || rules.length === 0) return '';
+        return rules.map(path => {
+            return path.map(cond => {
+                let v = cond.val.trim();
+                if (!v) return '';
+                if (cond.scope === 'tag') return v;
+                if (cond.scope === 'category') {
+                    if (cond.type === 'must') return '@' + v;
+                    if (cond.type === 'ban') return '!' + v;
+                }
+                return '';
+            }).filter(Boolean).join(' + ');
+        }).filter(Boolean).join(' | ');
+    }
+
+    function openImportModal() {
+        document.getElementById('io-title').innerText = t('ioImpTitle');
+        document.getElementById('io-desc').innerText = t('ioImpDesc');
+        document.getElementById('io-textarea').value = "";
+        document.getElementById('io-confirm-btn').style.display = "inline-block";
+        document.getElementById('io-modal').style.display = "flex";
+    }
+
+    function closeModal() { document.getElementById('io-modal').style.display = "none"; }
+
+    function confirmImport() {
+        const text = document.getElementById('io-textarea').value.trim();
+        if(!text) return;
+        const lines = text.split('\n');
+
+        if(!confirm(t('warnImport'))){ return; }
+        
+        database.quests = [];
+        database.cards = [];
+        
+        lines.forEach(line => {
+            const parts = line.split(/\t/);
+            if (parts.length >= 3) {
+                let cat = parts[0].trim();
+                let title = parts[1].trim();
+                let desc = parts[2].trim();
+                let p3 = parts[3] ? parts[3].trim().toLowerCase() : 'base';
+
+                if (cat === 'quest' || cat === 'objective') {
+                    let rules = [];
+                    let rawPaths = parts.slice(4).map(t => t.trim()).filter(Boolean).join('|');
+                    
+                    if (rawPaths) {
+                        rawPaths.split('|').forEach(pathStr => {
+                            let conds = [];
+                            pathStr.split('+').forEach(condStr => {
+                                let c = condStr.trim();
+                                if(!c) return;
+                                if (c.startsWith('!')) {
+                                    conds.push({ scope: 'category', type: 'ban', val: c.substring(1) });
+                                } else if (c.startsWith('@')) {
+                                    conds.push({ scope: 'category', type: 'must', val: c.substring(1) });
+                                } else {
+                                    conds.push({ scope: 'tag', val: c });
+                                }
+                            });
+                            if(conds.length > 0) rules.push(conds);
+                        });
+                    }
+                    database.quests.push({ id: generateId(), title, desc, rules });
+                } else {
+                    let p4 = parts[4] ? parts[4].trim() : '';
+                    database.cards.push({ id: generateId(), category: cat, title, desc, tier: p3, tags: p4 });
+                }
+            }
+        });
+        
+        closeModal();
+        currentEditId = null;
+        document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+        renderSidebar();
+        autoSave();
+        alert(t('msgImp'));
+    }
+
+    function exportJSON() {
+        saveCurrentEdit();
+        document.getElementById('io-title').innerText = t('ioJsonTitle');
+        document.getElementById('io-desc').innerText = t('ioJsonDesc');
+        document.getElementById('io-textarea').value = JSON.stringify(database, null, 2);
+        document.getElementById('io-confirm-btn').style.display = "none";
+        document.getElementById('io-modal').style.display = "flex";
+    }
+
+    function exportExcel() {
+        saveCurrentEdit();
+        let out = "";
+        
+        database.quests.forEach(q => {
+            let tagStr = buildTargetTagString(q.rules);
+            out += `quest\t${q.title}\t${q.desc}\t\t${tagStr}\n`;
+        });
+        
+        database.cards.forEach(c => {
+            out += `${c.category}\t${c.title}\t${c.desc}\t${c.tier}\t${c.tags}\n`;
+        });
+
+        document.getElementById('io-title').innerText = t('ioExcTitle');
+        document.getElementById('io-desc').innerHTML = t('ioExcDesc');
+        document.getElementById('io-textarea').value = out.trim();
+        document.getElementById('io-confirm-btn').style.display = "none";
+        document.getElementById('io-modal').style.display = "flex";
+    }
+    
+    function getMatchingCards(questRules) {
+        return database.cards.filter(card => {
+            const tags = card.tags.split(',').map(t => t.trim());
+            const category = card.category;
+            if (!questRules || questRules.length === 0) return true;
+            return questRules.some(path => {
+                return path.every(cond => {
+                    if (cond.scope === 'tag') return tags.includes(cond.val);
+                    if (cond.scope === 'category') {
+                        if (cond.type === 'must') return category === cond.val;
+                        if (cond.type === 'ban') return category !== cond.val;
+                    }
+                    return true;
+                });
+            });
+        });
+    }
+
+    function getMatchingQuests(card) {
+        const tags = card.tags.split(',').map(t => t.trim());
+        const category = card.category;
+        return database.quests.filter(q => {
+            if (!q.rules || q.rules.length === 0) return true;
+            return q.rules.some(path => {
+                return path.every(cond => {
+                    if (cond.scope === 'tag') return tags.includes(cond.val);
+                    if (cond.scope === 'category') {
+                        if (cond.type === 'must') return category === cond.val;
+                        if (cond.type === 'ban') return category !== cond.val;
+                    }
+                    return true;
+                });
+            });
+        });
+    }
+
+    function openQuestEditor(questId) {
+        editItem(questId, 'quest');
+    }
+
+    function openCardEditor(cardId) {
+        editItem(cardId, 'card');
+    }
+
+    function resetDatabase() {
+        if (!confirm(t('warnReset'))) return;
+        database = { quests: [], cards: [] };
+        localStorage.removeItem('questCardDatabase');
+        currentEditId = null;
+        currentEditType = null;
+        document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+        renderSidebar();
+        alert(t('msgReset'));
+    }
+
+    function toggleMenu(event) {
+        event.stopPropagation(); 
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+
+    function handleCategoryChange(selectElement) {
+        const item = database.cards.find(c => c.id === currentEditId);
+        if (!item) return;
+
+        const oldCat = item.category;
+
+        if (selectElement.value === '_new') {
+            selectElement.blur(); 
+            
+            setTimeout(() => {
+                let newCat = prompt(t('promptCat'));
+                
+                if (newCat && newCat.trim() !== '') {
+                    newCat = newCat.trim();
+                    const newOption = new Option(newCat, newCat);
+                    selectElement.add(newOption, selectElement.options[selectElement.options.length - 1]);
+                    selectElement.value = newCat;
+                    saveCurrentEdit();
+                    renderSidebar();
+                } else {
+                    selectElement.value = oldCat;
+                }
+            }, 50); 
+        } else {
+            saveCurrentEdit();
+            renderSidebar();
+        }
+    }
+    
+    function handleQuestCategoryChange(p, c, selectElement) {
+        const oldVal = currentRuleData[p][c].val; 
+        
+        if (selectElement.value === '_new') {
+            selectElement.blur();
+            
+            setTimeout(() => {
+                let newCat = prompt(t('promptCat'));
+                
+                if (newCat && newCat.trim() !== '') {
+                    newCat = newCat.trim();
+                    const newOption = new Option(newCat, newCat);
+                    selectElement.add(newOption, selectElement.options[selectElement.options.length - 1]);
+                    selectElement.value = newCat;
+                    currentRuleData[p][c].val = newCat;
+                    saveCurrentEdit();
+                } else {
+                    selectElement.value = oldVal || ''; 
+                }
+            }, 50);
+        } else {
+            currentRuleData[p][c].val = selectElement.value;
+            saveCurrentEdit();
+        }
+    }
+
+    autoLoad();
+    updateStaticUI();
+    renderSidebar();
+</script>
+</body>
+</html>
