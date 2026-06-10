@@ -169,6 +169,7 @@
             cTags: "标签 (Tags - 选填)", tagSub: "如果有多个标签，请用英文逗号分隔。",
             tierBase: "基础 (Base - 开局平分)", tierAdv: "进阶 (Advanced - 放入集市)",
             newCat: "-- 添加新分类 --", promptCat: "请输入新的分类名称 (英文或拼音最佳):",
+            newTag: "-- 添加新标签 --", promptTag: "请输入新的标签名称:",
             ruleTitle: "🏅 论证通关条件 (规则生成器)", ruleNone: "(当前没有任何限制，提交任意卡片即可通关)",
             pathPrefix: "路径", pathSuffix: "(满足以下条件即可):", delPath: "删除路径",
             must: "🎯 必须包含", ban: "🚫 绝对禁止", base: "📌 基础包含",
@@ -196,6 +197,7 @@
             cTags: "Tags (Optional)", tagSub: "Use English commas to separate multiple tags.",
             tierBase: "Base (Start evenly)", tierAdv: "Advanced (In Market)",
             newCat: "-- Add New Category --", promptCat: "Enter new category name:",
+            newTag: "-- Add New Tag --", promptTag: "Enter new tag name:",
             ruleTitle: "🏅 Clearance Conditions (Rule Builder)", ruleNone: "(No restrictions. Any card will pass.)",
             pathPrefix: "Path", pathSuffix: "(Satisfy the following):", delPath: "Delete Path",
             must: "🎯 Must Include", ban: "🚫 Strictly Ban", base: "📌 Base Include",
@@ -454,8 +456,28 @@
             
             path.forEach((cond, cIdx) => {
                 if (cond.scope === 'tag') {
+                    let allTagsSet = new Set();
+                    database.cards.forEach(card => {
+                        if (card.tags) {
+                            card.tags.split(',').forEach(t => {
+                                let trimmed = t.trim();
+                                if (trimmed) allTagsSet.add(trimmed);
+                            });
+                        }
+                    });
+                    currentRuleData.forEach(p => p.forEach(c => {
+                        if (c.scope === 'tag' && c.val) allTagsSet.add(c.val.trim());
+                    }));
+                    
+                    let tagOpts = Array.from(allTagsSet).map(tag => `<option value="${tag}" ${cond.val===tag?'selected':''}>${tag}</option>`).join('');
+
                     pathHTML += `
-                        <div class="rule-cond">🏷<input type="text" value="${cond.val}" onchange="updateCond(${pIdx},${cIdx},'val',this.value)">
+                        <div class="rule-cond">🏷
+                            <select onchange="handleQuestTagChange(${pIdx}, ${cIdx}, this)" style="border-bottom: 1px dashed #999; width: auto; min-width: 80px;">
+                                <option value="" disabled ${!cond.val?'selected':''}>- Select Tag -</option>
+                                ${tagOpts}
+                                <option value="_new">${t('newTag')}</option>
+                            </select>
                             <button class="btn-rule-del" onclick="removeCond(${pIdx},${cIdx})">✖</button>
                         </div>`;
                 } else {
@@ -733,27 +755,30 @@
         }
     }
     
-    function handleQuestCategoryChange(p, c, selectElement) {
+    function handleQuestTagChange(p, c, selectElement) {
         const oldVal = currentRuleData[p][c].val; 
         
         if (selectElement.value === '_new') {
-            selectElement.blur();
+            selectElement.blur(); 
             
             setTimeout(() => {
-                let newCat = prompt(t('promptCat'));
+                let newTag = prompt(t('promptTag'));
                 
-                if (newCat && newCat.trim() !== '') {
-                    newCat = newCat.trim();
-                    const newOption = new Option(newCat, newCat);
+                if (newTag && newTag.trim() !== '') {
+                    newTag = newTag.trim();
+                    
+                    const newOption = new Option(newTag, newTag);
                     selectElement.add(newOption, selectElement.options[selectElement.options.length - 1]);
-                    selectElement.value = newCat;
-                    currentRuleData[p][c].val = newCat;
+                    selectElement.value = newTag;
+                    
+                    currentRuleData[p][c].val = newTag;
                     saveCurrentEdit();
                 } else {
                     selectElement.value = oldVal || ''; 
                 }
             }, 50);
         } else {
+            // 普通选择
             currentRuleData[p][c].val = selectElement.value;
             saveCurrentEdit();
         }
