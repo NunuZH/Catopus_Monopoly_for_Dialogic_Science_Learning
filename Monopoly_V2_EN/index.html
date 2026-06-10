@@ -12,6 +12,7 @@
             --ochre: #b58235;
             --blue: #3c5a82;
         }
+
         body {
             background-color: var(--paper);
             background-image: url('https://www.transparenttextures.com/patterns/rice-paper-2.png');
@@ -52,6 +53,14 @@
             border: 2px solid var(--ink);
             position: relative;
         }
+
+        #board.macro-mode {
+            width: 850px !important; 
+            height: 650px !important; 
+            overflow: auto !important; 
+            justify-content: flex-start;
+            align-content: flex-start;
+        }
         
         .cell {
             background: rgba(255,255,255,0.8);
@@ -81,6 +90,23 @@
             outline: 4px solid var(--vermilion);
         }
 
+        .minimap-cell {
+            width: 35px;
+            height: 35px;
+            font-size: 14px; 
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #baa382;
+            border-radius: 4px;
+        }
+        .minimap-start { background: var(--ink); color: white; }
+        .minimap-quest { background: #fffcf5; border: 1px dashed var(--ink); color: var(--ink); }
+        .minimap-lab { background: #e6dfcc; color: var(--ink); }
+        .minimap-market { background: #dacfa9; color: var(--ink); }
+        .minimap-empty { background: transparent; border: none; }
+
         #score-panel { width: 340px; background: rgba(255,255,255,0.7); border: 2px solid var(--ink); padding: 15px; }
         .score-item { margin-bottom: 15px; padding: 12px; border-bottom: 1px dashed var(--ink); background: rgba(255,255,255,0.5); transition: all 0.4s ease; font-size: 16px; }
         .score-item.active-player { background: #fff; transform: scale(1.05); box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); border-right: 2px solid var(--ink); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
@@ -96,7 +122,12 @@
 
         .dice-area { display: flex; align-items: center; justify-content: center; gap: 30px; margin: 20px 0; background: #fff; padding: 20px; border: 2px solid var(--ink); }
         .dice-container { perspective: 1000px; cursor: pointer; }
-        #dice { width: 60px; height: 60px; position: relative; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.3, 1); transform: rotateX(-30deg) rotateY(45deg); }
+        .dice-cube { 
+            width: 60px; height: 60px; position: relative; 
+            transform-style: preserve-3d; 
+            transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.3, 1); 
+            transform: rotateX(-30deg) rotateY(45deg); 
+        }
         .dice-face { position: absolute; width: 60px; height: 60px; background: #fffcf5; border: 2px solid var(--ink); border-radius: 6px; font-size: 36px; font-weight: 900; line-height: 60px; text-align: center; color: var(--vermilion); box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
         .front { transform: rotateY(0deg) translateZ(30px); }
         .back { transform: rotateY(180deg) translateZ(30px); }
@@ -172,6 +203,7 @@
     <div style="position: absolute; top: 15px; left: 20px; z-index: 100;">
         <button class="btn-retro" style="font-size: 14px; padding: 5px 10px;" onclick="saveGame()">🏮 Save</button>
         <button class="btn-retro" style="font-size: 14px; padding: 5px 10px;" onclick="loadGame()">🕯️ Restore</button>
+        <button id="btn-minimap" class="btn-retro" style="font-size: 14px; padding: 5px 10px; display: none;" onclick="openMinimap()">🗺️ Overview</button>
     </div>
     🔬 The Principal Investigator 🔬
     <div style="position: absolute; top: 15px; right: 0px; z-index: 100;">
@@ -208,13 +240,23 @@
         <div id="board"></div>
         <div class="dice-area">
             <div style="text-align: left;">
-                <h3 id="dice-status" style="margin: 0 0 10px 0; font-size: 24px;">Awaiting Research Progress...</h3>
-                <p style="font-size: 14px; margin: 0; color: #666;">(Roll to proceed)</p>
+                <h3 id="dice-status" style="margin: 0 0 10px 0; font-size: 24px;">Awaiting Roll...</h3>
+                <p style="font-size: 14px; margin: 0; color: #666;">(Click the dice to roll)</p>
             </div>
-            <div class="dice-container" onclick="rollDice()">
-                <div id="dice">
+            <div class="dice-container" onclick="rollDice()" style="display: flex; gap: 20px; justify-content: center;">
+                <div id="dice-d6" class="dice-cube">
                     <div class="dice-face front">1</div><div class="dice-face back">6</div><div class="dice-face right">3</div>
                     <div class="dice-face left">4</div><div class="dice-face top">2</div><div class="dice-face bottom">5</div>
+                </div>
+
+                <div id="dice-d6-2" class="dice-cube" style="display: none;">
+                    <div class="dice-face front">1</div><div class="dice-face back">6</div><div class="dice-face right">3</div>
+                    <div class="dice-face left">4</div><div class="dice-face top">2</div><div class="dice-face bottom">5</div>
+                </div>
+
+                <div id="dice-d4" class="dice-cube" style="display: none;">
+                    <div class="dice-face front" style="color: var(--jade);">1</div><div class="dice-face back" style="color: var(--jade);">4</div><div class="dice-face right" style="color: var(--jade);">3</div>
+                    <div class="dice-face left" style="color: var(--jade);">2</div><div class="dice-face top" style="color: var(--jade);">1</div><div class="dice-face bottom" style="color: var(--jade);">2</div>
                 </div>
             </div>
         </div>
@@ -222,7 +264,7 @@
     <div id="score-panel">
         <h3 style="margin-top:0; border-bottom: 2px solid var(--ink); text-align: center; font-size: 24px;">Research Portfolio Overview</h3>
         <div id="player-list"></div>
-        <button class="btn-retro btn-red" style="width: 100%; margin-top: 25px; font-size: 18px; padding: 12px 0;" onclick="manualEndGame()">🏆 End Game</button>
+        <button class="btn-retro btn-red" style="width: 100%; margin-top: 25px; font-size: 18px; padding: 12px 0;" onclick="manualEndGame()">🏆 End Game (Leaderboard)</button>
     </div>
 </div>
 
@@ -424,6 +466,19 @@
     </div>
 </div>
 
+<div id="minimap-modal" class="modal">
+    <div class="modal-content" style="max-width: 800px; padding: 30px; background: #e8e8e8;">
+        <h2 style="color: var(--ink); margin-top: 0; font-size: 28px; letter-spacing: 2px;">🗺️ Strategic Overview</h2>
+        
+        <div id="minimap-grid" style="display: grid; gap: 4px; padding: 15px; background: white; border: 2px solid var(--ink); border-radius: 8px; margin: 20px auto; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.1);">
+            </div>
+
+        <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center;">
+            <button class="btn-retro btn-gray" style="font-size: 18px; padding: 10px 30px;" onclick="document.getElementById('minimap-modal').style.display='none'">Close Map</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const characters = [
         { id: 'c1', name: 'Sun', img: '../Images/孙岫云icon.png', desc: '【Strategic Lead】Initiating a new project triggers a major grant allocation, doubling initial funding to 2000 G.' },
@@ -492,12 +547,11 @@
         setTimeout(() => floater.remove(), 1500); 
     }
 
-    const mapOrder = [0,1,2,3,4, 9,14,19,24, 23,22,21,20, 15,10,5];
-    let currentMapTypes = [
-        'start', 'diy-lab', 'quest-land', 'quest-land', 'diy-lab', 
-        'quest-land', 'market', 'quest-land', 'quest-land', 'quest-land', 
-        'diy-lab', 'quest-land', 'quest-land', 'market', 'quest-land', 'quest-land'
-    ];
+    let mapOrder = [];
+    let currentMapTypes = [];
+    let mapWidth = 5; 
+    let mapHeight = 5;
+
     let mapQuests = {};
 
     let questPool = [
@@ -527,6 +581,50 @@
     let synthSelection = { phenomenon: [], theory: [], experiment: [] };
     let pendingDrawnCard = null;
     let landShares = {}; 
+
+    function generateDynamicMap() {
+        let qCount = questPool.length;
+        if (qCount === 0) return;
+
+        let diyCount = Math.max(1, Math.floor(qCount / 5));
+        let marketCount = Math.max(1, Math.floor(qCount / 5));
+        
+        let T = qCount + diyCount + marketCount + 1; 
+        if (T % 2 !== 0) {
+            diyCount++; 
+            T++;
+        }
+
+        let halfPerimeter = (T + 4) / 2;
+        mapWidth = Math.ceil(halfPerimeter / 2);
+        mapHeight = Math.floor(halfPerimeter / 2);
+
+        mapOrder = [];
+        for (let i = 0; i < mapWidth; i++) mapOrder.push(i);
+        for (let i = 1; i < mapHeight - 1; i++) mapOrder.push(i * mapWidth + mapWidth - 1);
+        for (let i = mapWidth - 1; i >= 0; i--) mapOrder.push((mapHeight - 1) * mapWidth + i);
+        for (let i = mapHeight - 2; i >= 1; i--) mapOrder.push(i * mapWidth);
+        currentMapTypes = new Array(T).fill('quest-land');
+        currentMapTypes[0] = 'start'; 
+
+        let specialTypes = [];
+        let maxSpecial = Math.max(diyCount, marketCount);
+        for (let i = 0; i < maxSpecial; i++) {
+            if (i < diyCount) specialTypes.push('diy-lab');
+            if (i < marketCount) specialTypes.push('market');
+        }
+
+        let availableSlots = T - 1;
+        let zoneSize = Math.floor(availableSlots / specialTypes.length);
+
+        for (let i = 0; i < specialTypes.length; i++) {
+            let zoneStart = 1 + i * zoneSize;
+            let zoneEnd = (i === specialTypes.length - 1) ? T - 1 : zoneStart + zoneSize - 1;
+            let randomPosInZone = Math.floor(Math.random() * (zoneEnd - zoneStart + 1)) + zoneStart;
+            
+            currentMapTypes[randomPosInZone] = specialTypes[i];
+        }
+    }
 
     function initGame(isPureMode = false) {
         if(typeof isMusicOn !== 'undefined' && isMusicOn) bgMusic.play().catch(e=>{}); 
@@ -662,29 +760,35 @@
     }
 
     function renderBoard() {
-        const board = document.getElementById('board');
-        board.innerHTML = ''; 
+        if (mapOrder.length === 0 || currentMapTypes.length === 0) {
+            generateDynamicMap();
+        }
 
-        if (Object.keys(mapQuests).length === 0 && questPool.length > 0) {
+        const board = document.getElementById('board');
+        board.innerHTML = '';
+        
+        let isMacroMap = questPool.length > 12;
+        let cellSize = isMacroMap ? 165 : 120;
+        
+        if (isMacroMap) board.classList.add('macro-mode');
+        else board.classList.remove('macro-mode');
+
+        board.style.gridTemplateColumns = `repeat(${mapWidth}, ${cellSize}px)`;
+        board.style.gridTemplateRows = `repeat(${mapHeight}, ${cellSize}px)`;
+
+        mapQuests = {};
+        if (questPool.length > 0) {
             let questIndex = 0;
-            
             currentMapTypes.forEach((type, idx) => {
                 if (type === 'quest-land') {
                     mapQuests[idx] = questPool[questIndex % questPool.length];
                     questIndex++;
                 }
             });
-            
-            let activeQuests = [];
-            for (let k in mapQuests) {
-                if (!activeQuests.some(q => q.title === mapQuests[k].title)) {
-                    activeQuests.push(mapQuests[k]);
-                }
-            }
-            questPool = activeQuests;
         }
 
-        for(let i=0; i<25; i++) {
+        let totalGridCells = mapWidth * mapHeight;
+        for(let i = 0; i < totalGridCells; i++) {
             const cell = document.createElement('div');
             if(mapOrder.includes(i)) {
                 const idx = mapOrder.indexOf(i); 
@@ -701,34 +805,24 @@
                     if (mapQuests[idx]) {
                         let rawTitle = mapQuests[idx].title;
                         let displayTitle = "";
-
-                        // 如果全是中文且没有空格，最多显示8个字，4个字换行
                         if (!rawTitle.includes(' ') && !/[a-zA-Z]/.test(rawTitle)) {
                             let t = rawTitle.substring(0, 8);
                             displayTitle = t.length > 4 ? t.substring(0, 4) + '<br>' + t.substring(4) : t;
                         } else {
-                            // 英文/中英混合判定：按单词分割，最多两行，每行最大长度 16
                             let words = rawTitle.split(' ');
-                            let line1 = '';
-                            let line2 = '';
-
+                            let line1 = '', line2 = '';
                             for (let word of words) {
                                 if (line1.length + word.length + (line1 ? 1 : 0) <= 16) {
                                     line1 += (line1 ? ' ' : '') + word;
-                                } 
-                                else if (line2.length + word.length + (line2 ? 1 : 0) <= 16) {
+                                } else if (line2.length + word.length + (line2 ? 1 : 0) <= 16) {
                                     line2 += (line2 ? ' ' : '') + word;
-                                } 
-                                else {
-                                    break; 
-                                }
+                                } else break; 
                             }
                             displayTitle = line2 ? `${line1}<br>${line2}` : line1;
                         }
                         titleText = `<div style="font-size: 13px; font-weight: bold; color: var(--vermilion); margin-top: 2px; z-index:2; text-align: center; line-height: 1.2;">${displayTitle}</div>`;
                     }
                 }
-                
                 else if(type === 'diy-lab') {
                     icon = '✨'; 
                     titleText = '<div style="font-size: 14px; font-weight: bold; color: var(--jade); margin-top: 2px; z-index:2;">Preprint</br>Incubator</div>';
@@ -745,11 +839,8 @@
 
                 if (landShares[idx] !== undefined && type === 'quest-land') {
                     let owner = players.find(p => p.id === landShares[idx].ownerId);
-
                     let totalCards = 0;
-                    for (let pid in landShares[idx].stakes) {
-                        totalCards += landShares[idx].stakes[pid].length;
-                    }
+                    for (let pid in landShares[idx].stakes) totalCards += landShares[idx].stakes[pid].length;
 
                     if(owner) {
                         cell.style.border = `4px solid ${owner.color}`;
@@ -769,17 +860,27 @@
         
         const centerStage = document.createElement('div');
         centerStage.id = 'center-avatar-container';
-        centerStage.style.position = 'absolute';
-        centerStage.style.top = '50%';
-        centerStage.style.left = '50%';
-        centerStage.style.transform = 'translate(-50%, -50%)';
+        
+        if (isMacroMap) {
+            centerStage.style.position = 'fixed';       
+            centerStage.style.top = '40%';              
+            centerStage.style.left = '40%';             
+            centerStage.style.transform = 'translate(-50%, -50%)'; 
+            centerStage.style.zIndex = '100';           
+        } else {
+            centerStage.style.position = 'absolute';
+            centerStage.style.top = '50%';
+            centerStage.style.left = '50%';
+            centerStage.style.transform = 'translate(-50%, -50%)';
+            centerStage.style.zIndex = '5';
+        }
+
         centerStage.style.pointerEvents = 'none'; 
         centerStage.style.display = 'flex';
         centerStage.style.flexDirection = 'column';
         centerStage.style.alignItems = 'center';
-        centerStage.style.zIndex = '5';
+        
         board.appendChild(centerStage);
-
         updateActiveCell();
     }
 
@@ -833,16 +934,41 @@
         document.getElementById('dice-status').innerHTML = `Current Turn: <strong style="color:${p.color}; font-size:30px;">${p.name}</strong>`;
         document.body.style.backgroundColor = p.color + "0A"; 
         updateScoreBoard();
+        
+        let qCount = questPool.length;
+        let isMicroMap = qCount > 0 && qCount < 8;
+        let isMacroMap = qCount > 12;
+
+        const diceD6 = document.getElementById('dice-d6');
+        const diceD6_2 = document.getElementById('dice-d6-2');
+        const diceD4 = document.getElementById('dice-d4');
+        const btnMinimap = document.getElementById('btn-minimap');
+        
+        if (diceD6 && diceD4) {
+            diceD6.style.display = isMicroMap ? 'none' : 'block';
+            diceD4.style.display = isMicroMap ? 'block' : 'none';
+            diceD6_2.style.display = isMacroMap ? 'block' : 'none';
+        }
+
+        if (btnMinimap) {
+            btnMinimap.style.display = isMacroMap ? 'inline-block' : 'none';
+        }
+
         const centerContainer = document.getElementById('center-avatar-container');
-        if (centerContainer && p.character) { 
-            centerContainer.innerHTML = `
-                <div style="width: 180px; height: 180px; border-radius: 50%; border: 8px solid ${p.color}; overflow: hidden; animation: avatarBreathe 3s infinite ease-in-out; background: #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">
-                    <img src="${p.character.img}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/180?text=No_Img_Found'">
-                </div>
-                <div style="margin-top: 20px; font-size: 28px; font-weight: 900; color: ${p.color}; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff; letter-spacing: 2px;">
-                    ${p.name}
-                </div>
-            `;
+        if (centerContainer) {
+            if (isMicroMap) {
+                centerContainer.style.display = 'none';
+            } else if (p.character) {
+                centerContainer.style.display = 'flex';
+                centerContainer.innerHTML = `
+                    <div style="width: 180px; height: 180px; border-radius: 50%; border: 8px solid ${p.color}; overflow: hidden; animation: avatarBreathe 3s infinite ease-in-out; background: #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">
+                        <img src="${p.character.img}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/180?text=No_Img_Found'">
+                    </div>
+                    <div style="margin-top: 20px; font-size: 28px; font-weight: 900; color: ${p.color}; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff; letter-spacing: 2px;">
+                        ${p.name}
+                    </div>
+                `;
+            }
         }
     }
 
@@ -863,20 +989,60 @@
         isDiceRolling = true;
         
         const p = players[activePlayerIndex];
-        const dice = document.getElementById('dice');
-        let num = (typeof forceNum === 'number') ? forceNum : Math.floor(Math.random() * 6) + 1;
+        let qCount = questPool.length;
+        let isMicroMap = qCount < 8; 
+        let isMacroMap = qCount > 12; 
+        
+        const diceD6 = document.getElementById('dice-d6');
+        const diceD6_2 = document.getElementById('dice-d6-2');
+        const diceD4 = document.getElementById('dice-d4');
+
+        let num1, num2, totalNum, finalMsg;
+
+        if (isMicroMap) {
+            totalNum = (typeof forceNum === 'number') ? forceNum : Math.floor(Math.random() * 4) + 1;
+            if(totalNum > 4) totalNum = 4;
+            finalMsg = `<strong>${totalNum}</strong> !<br><span style="font-size:12px; color:#888;">(D4)</span>`;
+            applyDiceAnimation(diceD4, totalNum);
+        } else if (isMacroMap) {
+            num1 = (typeof forceNum === 'number') ? Math.ceil(forceNum/2) : Math.floor(Math.random() * 6) + 1;
+            num2 = (typeof forceNum === 'number') ? Math.floor(forceNum/2) : Math.floor(Math.random() * 6) + 1;
+            if(num1 > 6) num1 = 6; if(num2 > 6) num2 = 6;
+            totalNum = num1 + num2;
+            finalMsg = `<strong>${totalNum}</strong> !<br><span style="font-size:12px; color:#888;">(2xD6: ${num1} + ${num2})</span>`;
+            applyDiceAnimation(diceD6, num1);
+            applyDiceAnimation(diceD6_2, num2);
+        } else {
+            totalNum = (typeof forceNum === 'number') ? forceNum : Math.floor(Math.random() * 6) + 1;
+            if(totalNum > 6) totalNum = 6;
+            finalMsg = `<strong>${totalNum}</strong> !<br><span style="font-size:12px; color:#888;">(D6)</span>`;
+            applyDiceAnimation(diceD6, totalNum);
+        }
+
+        function applyDiceAnimation(element, targetNum) {
+            const rotations = [ [0, 0], [-90, 0], [0, -90], [0, 90], [90, 0], [0, 180] ];
+            const finalR = rotations[((targetNum - 1) % 6 + 6) % 6]; 
+            let perturb = (Math.random() - 0.5) * 10; 
+            element.style.transform = `rotateX(${finalR[0] + 1080 + perturb}deg) rotateY(${finalR[1] + 1080 - perturb}deg)`;
+        }
         
         if(typeof playSfx === 'function') playSfx('dice');
         document.getElementById('dice-status').innerHTML = `${p.name} Rolling...`;
         
-        const rotations = [ [0, 0], [-90, 0], [0, -90], [0, 90], [90, 0], [0, 180] ];
-        const finalR = rotations[((num - 1) % 6 + 6) % 6]; 
-        dice.style.transform = `rotateX(${finalR[0] + 1080}deg) rotateY(${finalR[1] + 1080}deg)`;
-        
         setTimeout(() => {
-            document.getElementById('dice-status').innerHTML = `${p.name} rolled <strong>${num}</strong> !`;
+            document.getElementById('dice-status').innerHTML = `${p.name} rolled ${finalMsg}`;
             
-            currentPos = ((currentPos + num) % 16 + 16) % 16; 
+            let oldPos = currentPos;
+            let totalPathLength = mapOrder.length; 
+            currentPos = ((currentPos + totalNum) % totalPathLength + totalPathLength) % totalPathLength; 
+            
+            if (oldPos + totalNum >= totalPathLength) {
+                p.funds += 1000;
+                if(typeof showScoreAnimation === 'function') showScoreAnimation(p.color, "+1000 G");
+                alert(`🎉 You've completed a full cycle! 1000 G funding automatically granted!`);
+                updateScoreBoard();
+            }
+
             updateActiveCell();
             
             setTimeout(() => { 
@@ -886,9 +1052,74 @@
         }, 1500);
     }
 
+    function openMinimap() {
+        if(typeof playSfx === 'function') playSfx('click');
+        
+        const grid = document.getElementById('minimap-grid');
+        grid.style.gridTemplateColumns = `repeat(${mapWidth}, 35px)`;
+        grid.style.gridTemplateRows = `repeat(${mapHeight}, 35px)`;
+        grid.innerHTML = ''; 
+
+        let totalGridCells = mapWidth * mapHeight;
+        for (let i = 0; i < totalGridCells; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'minimap-cell';
+
+            if (mapOrder.includes(i)) {
+                let pathIdx = mapOrder.indexOf(i);
+                let type = currentMapTypes[pathIdx];
+
+                if (type === 'start') {
+                    cell.classList.add('minimap-start');
+                    cell.innerText = 'S';
+                } else if (type === 'diy-lab') {
+                    cell.classList.add('minimap-lab');
+                    cell.innerText = '✨';
+                } else if (type === 'market') {
+                    cell.classList.add('minimap-market');
+                    cell.innerText = '🌐';
+                } else if (type === 'quest-land') {
+                    cell.classList.add('minimap-quest');
+                    let ls = landShares[pathIdx];
+                    if (ls && ls.ownerId !== undefined) {
+                        let owner = players.find(p => p.id === ls.ownerId);
+                        if (owner) {
+                            cell.style.backgroundColor = owner.color;
+                            cell.style.color = 'white';
+                            cell.style.borderColor = owner.color;
+                        }
+                    }
+                }
+
+                if (pathIdx === currentPos) {
+                    cell.style.outline = `3px solid var(--vermilion)`;
+                    cell.style.transform = 'scale(1.1)';
+                    cell.style.zIndex = '10';
+                    cell.innerHTML = '📍';
+                }
+            } else {
+                cell.classList.add('minimap-empty'); 
+            }
+            grid.appendChild(cell);
+        }
+
+        document.getElementById('minimap-modal').style.display = 'flex';
+    }
+
     function updateActiveCell() {
         document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
-        document.getElementById(`step-${currentPos}`).classList.add('active');
+        const activeCell = document.getElementById(`step-${currentPos}`);
+        if (activeCell) {
+            activeCell.classList.add('active');
+            // Camera follow behavior
+            setTimeout(() => {
+                activeCell.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center',    
+                    inline: 'center'    
+                });
+            }, 100);
+        }
     }
 
     function saveGame() {
@@ -900,7 +1131,12 @@
                 landShares: landShares,       
                 currentMapTypes: currentMapTypes,
                 cardPool: cardPool,
-                isGameStarted: document.getElementById('main-stage').style.display === 'flex'
+                isGameStarted: document.getElementById('main-stage').style.display === 'flex',
+                mapWidth: mapWidth,
+                mapHeight: mapHeight,
+                mapOrder: mapOrder,
+                mapQuests: mapQuests,
+                questPool: questPool
             };
             localStorage.setItem('game_save', JSON.stringify(gameData));
             if(typeof playSfx === 'function') playSfx('scoreup');
@@ -926,6 +1162,11 @@
             landShares = data.landShares;
             currentMapTypes = data.currentMapTypes;
             cardPool = data.cardPool;
+            mapWidth = data.mapWidth || 5;
+            mapHeight = data.mapHeight || 5;
+            mapOrder = data.mapOrder || [];
+            mapQuests = data.mapQuests || {};
+            if (data.questPool) questPool = data.questPool;
 
             isDiceRolling = false;
 
