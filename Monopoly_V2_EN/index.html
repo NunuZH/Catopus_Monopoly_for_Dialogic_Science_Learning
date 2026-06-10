@@ -222,6 +222,7 @@
     <div id="score-panel">
         <h3 style="margin-top:0; border-bottom: 2px solid var(--ink); text-align: center; font-size: 24px;">Research Portfolio Overview</h3>
         <div id="player-list"></div>
+        <button class="btn-retro btn-red" style="width: 100%; margin-top: 25px; font-size: 18px; padding: 12px 0;" onclick="manualEndGame()">🏆 End Game (Leaderboard)</button>
     </div>
 </div>
 
@@ -1855,6 +1856,12 @@
                 alert(`🚨 Bankruptcy!\n[${p.name}]'s funding chain has completely collapsed (< -3000 G). The laboratory is forcibly shut down!`);
             }
         });
+    }
+
+    function manualEndGame() {
+        if (confirm("Are you sure you want to end the game and view the final leaderboard?\n(Rankings will be based on current funding and insight cards.)")) {
+            endGameSettlement("📜 Game ended: Final assessment initiated!");
+        }
     }
 
     function checkGameOver() {
