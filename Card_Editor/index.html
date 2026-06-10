@@ -167,12 +167,13 @@
             qTitle: "课题标题 (Title)", qDesc: "背景要求描述 (Description)",
             cTitle: "卡片名称 (Title)", cDesc: "卡片描述 (Description)", cCat: "分类 (Category)", cTier: "级别 (Tier)",
             cTags: "标签 (Tags - 选填)", tagSub: "如果有多个标签，请用英文逗号分隔。",
+            MatQuests: "匹配课题：", MatCards: "匹配卡片：",
             tierBase: "基础 (Base - 开局平分)", tierAdv: "进阶 (Advanced - 放入集市)",
             newCat: "-- 添加新分类 --", promptCat: "请输入新的分类名称 (英文或拼音最佳):",
             newTag: "-- 添加新标签 --", promptTag: "请输入新的标签名称:",
             ruleTitle: "🏅 论证通关条件 (规则生成器)", ruleNone: "(当前没有任何限制，提交任意卡片即可通关)",
             pathPrefix: "路径", pathSuffix: "(满足以下条件即可):", delPath: "删除路径",
-            must: "🎯 必须包含", ban: "🚫 绝对禁止", base: "📌 基础包含",
+            must: "🎯 必须包含", ban: "🚫 绝对禁止", base: "📌 基础包含", addTagQuick: "➕ 快捷添加",
             addCond: "+ 添加条件 (AND)", addPath: "➕ 添加新通关路径 (OR)", or: "或者 (OR)",
             tagHint: "💡 课题提示：当前课题需要的标签如下：", tagHintNone: "当前没有课题设置了标签限制。",
             delConfirm: "确定要删除这项数据吗？",
@@ -195,16 +196,17 @@
             qTitle: "Quest Title", qDesc: "Background Description",
             cTitle: "Card Title", cDesc: "Card Description", cCat: "Category", cTier: "Tier",
             cTags: "Tags (Optional)", tagSub: "Use English commas to separate multiple tags.",
+            MatQuests: "Matched Quests:", MatCards: "Matched Cards:",
             tierBase: "Base (Start evenly)", tierAdv: "Advanced (In Market)",
             newCat: "-- Add New Category --", promptCat: "Enter new category name:",
             newTag: "-- Add New Tag --", promptTag: "Enter new tag name:",
             ruleTitle: "🏅 Clearance Conditions (Rule Builder)", ruleNone: "(No restrictions. Any card will pass.)",
             pathPrefix: "Path", pathSuffix: "(Satisfy the following):", delPath: "Delete Path",
-            must: "🎯 Must Include", ban: "🚫 Strictly Ban", base: "📌 Base Include",
+            must: "🎯 Must Include", ban: "🚫 Strictly Ban", base: "📌 Base Include", addTagQuick: "➕ Quick Add",
             addCond: "+ Add Cond (AND)", addPath: "➕ Add New Path (OR)", or: "OR",
             tagHint: "💡 Tag Reference: Required tags for your current quests:", tagHintNone: "No quests currently require specific tags.",
             delConfirm: "Are you sure you want to delete this?",
-            ioImpTitle: "📥 Import from Excel", ioImpDesc: "Format: [Type/quest] | [Title] | [Desc] | [Tier] | [Tags]",
+            ioImpTitle: "📥 Import from Excel", ioImpDesc: "Format: [Type/quest] | [Title] | [Desc] | [base/advance] | [Tags]",
             ioJsonTitle: "💾 Export JSON Backup", ioJsonDesc: "Save this text in a TXT file as a secure backup.",
             ioExcTitle: "📤 Export Game Code", ioExcDesc: "Copy everything below and paste it into the game's Database Center!",
             btnConfirm: "Confirm", btnClose: "Close", msgImp: "Import successful!",
@@ -354,11 +356,23 @@
     function renderCardEditor(item, container) {
         let allCategories = [...new Set(database.cards.map(c => c.category)), 'Theory', 'Experiment', 'Phenomenon'];
         let catOptions = [...new Set(allCategories)].map(cat => `<option value="${cat}" ${item.category===cat?'selected':''}>${cat}</option>`).join('');
-        
+
+        let allTagsSet = new Set();
+        database.cards.forEach(card => {
+            if (card.tags) card.tags.split(',').forEach(t => { if (t.trim()) allTagsSet.add(t.trim()); });
+        });
+        database.quests.forEach(q => {
+            if (q.rules) q.rules.forEach(p => p.forEach(c => {
+                if (c.scope === 'tag' && c.val) allTagsSet.add(c.val.trim());
+            }));
+        });
+        let tagOpts = Array.from(allTagsSet).map(tag => `<option value="${tag}">${tag}</option>`).join('');
+
         let matches = getMatchingQuests(item);
         let matchHTML = matches.length > 0
             ? matches.map(m => `<span onclick="openQuestEditor('${m.id}')" style="background:#e3f2fd; padding:3px 8px; border-radius:4px; margin-right:5px; border:1px solid #bbdefb; font-size:12px; display:inline-block; margin-bottom:5px; cursor:pointer;">🎯 ${m.title}</span>`).join('')
             : '';
+            
         container.innerHTML = `
             <div style="margin-bottom: 20px;">
                 <h2 style="color:var(--jade); margin:0;">🃏 ${t('cTitle').split(' ')[0]}</h2>
@@ -387,15 +401,24 @@
                     </select>
                 </div>
             </div>
+            
             <div class="form-group">
                 <label>${t('cTags')}</label>
-                <input type="text" id="edit-tags" value="${item.tags}" placeholder="Link back to your Quests..." onchange="saveCurrentEdit(); editItem('${item.id}', 'card');">
+                <div style="display:flex; gap: 10px;">
+                    <input type="text" id="edit-tags" value="${item.tags}" placeholder="Link back to your Quests..." onchange="saveCurrentEdit(); editItem('${item.id}', 'card');" style="flex:1;">
+                    <select onchange="handleCardTagAppend(this)" style="width:140px; background:#f4f4f4; border-style:dashed;">
+                        <option value="" disabled selected>${t('addTagQuick')}</option>
+                        ${tagOpts}
+                        <option value="_new">${t('newTag')}</option>
+                    </select>
+                </div>
                 <span style="font-size:12px; color:#888;">${t('tagSub')}</span>
                 <div class="tag-hint-box" style="margin-top:10px;">
-                    <strong>匹配课题：</strong><br>
+                    <strong>${t('MatQuests')}</strong><br>
                     <div style="margin-top:5px;">${matchHTML}</div>
                 </div>
             </div>
+            
             <div style="text-align:right; border-top: 1px solid #ccc; padding-top: 20px; margin-top: 20px;">
                 <button class="btn-danger" onclick="deleteCurrent()">${t('delCard')}</button>
             </div>
@@ -429,7 +452,7 @@
             </div>
 
             <div class="tag-hint-box" style="border: 1px solid var(--ochre); background:#fffcf5;">
-                <strong>匹配卡片：</strong><br>
+                <strong>${t('MatCards')}</strong><br>
                 <div style="margin-top:5px;">${cardHTML}</div>
             </div>
 
@@ -780,6 +803,43 @@
         } else {
             currentRuleData[p][c].val = selectElement.value;
             saveCurrentEdit();
+        }
+    }
+
+    function handleCardTagAppend(selectElement) {
+        const item = database.cards.find(c => c.id === currentEditId);
+        if (!item) return;
+
+        let selectedVal = selectElement.value;
+        if (!selectedVal) return;
+
+        const appendTag = (newTag) => {
+            let currentInput = document.getElementById('edit-tags');
+            let currentTags = currentInput.value.split(',').map(t => t.trim()).filter(Boolean);
+            
+            if (!currentTags.includes(newTag)) {
+                currentTags.push(newTag);
+                currentInput.value = currentTags.join(', '); 
+                item.tags = currentInput.value; 
+                saveCurrentEdit();
+                editItem(currentEditId, 'card'); 
+            } else {
+                selectElement.value = '';
+            }
+        };
+
+        if (selectedVal === '_new') {
+            selectElement.blur(); 
+            setTimeout(() => {
+                let newTag = prompt(t('promptTag'));
+                if (newTag && newTag.trim() !== '') {
+                    appendTag(newTag.trim());
+                } else {
+                    selectElement.value = ''; 
+                }
+            }, 50);
+        } else {
+            appendTag(selectedVal);
         }
     }
 
