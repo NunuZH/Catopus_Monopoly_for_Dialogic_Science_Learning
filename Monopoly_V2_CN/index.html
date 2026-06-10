@@ -221,6 +221,7 @@
     <div id="score-panel">
         <h3 style="margin-top:0; border-bottom: 2px solid var(--ink); text-align: center; font-size: 24px;">课题组资源概览</h3>
         <div id="player-list"></div>
+        <button class="btn-retro btn-red" style="width: 100%; margin-top: 25px; font-size: 18px; padding: 12px 0;" onclick="manualEndGame()">🏆 提前结算 (排行榜)</button>
     </div>
 </div>
 
@@ -1858,6 +1859,12 @@
                 alert(`🚨 破产！\n\n[${p.name}] 资金链彻底断裂 (< -3000 G)，实验室被强制关停，只能被迫退出本次角逐！`);
             }
         });
+    }
+
+    function manualEndGame() {
+        if (confirm("确定要结束游戏并进入最终结算吗？\n（将根据当前经费和卡片数量进行最终排名）")) {
+            endGameSettlement("📜 结题：系统发起了终期考评！");
+        }
     }
 
     function checkGameOver() {
