@@ -1191,10 +1191,7 @@
     function triggerTileEvent(type) {
         const p = players[activePlayerIndex];
         if (type === 'start') {
-            alert(`🎉 Landing on the starting point: Research funding of 1000 G granted!`);
-            p.funds += 1000;
-            showScoreAnimation(p.color, "+1000 G");
-            updateScoreBoard();
+            alert(`📍 You landed precisely on the Research Start! Take this turn to gather your thoughts and consolidate your resources.`);
             nextTurn();
         } 
         else if (type === 'quest-land') {
