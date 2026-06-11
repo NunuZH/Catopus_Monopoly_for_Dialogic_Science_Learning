@@ -488,9 +488,11 @@
                             });
                         }
                     });
-                    currentRuleData.forEach(p => p.forEach(c => {
-                        if (c.scope === 'tag' && c.val) allTagsSet.add(c.val.trim());
-                    }));
+                    database.quests.forEach(q => {
+                        if (q.rules) q.rules.forEach(p => p.forEach(c => {
+                            if (c.scope === 'tag' && c.val) allTagsSet.add(c.val.trim());
+                        }));
+                    });
                     
                     let tagOpts = Array.from(allTagsSet).map(tag => `<option value="${tag}" ${cond.val===tag?'selected':''}>${tag}</option>`).join('');
 
@@ -505,9 +507,11 @@
                         </div>`;
                 } else {
                     let ruleCats = [];
-                    currentRuleData.forEach(p => p.forEach(c => {
-                        if (c.scope === 'category' && c.val) ruleCats.push(c.val);
-                    }));
+                    database.quests.forEach(q => {
+                        if (q.rules) q.rules.forEach(p => p.forEach(c => {
+                            if (c.scope === 'category' && c.val) ruleCats.push(c.val);
+                        }));
+                    });
                     let allCategories = [...new Set([...database.cards.map(card => card.category), ...ruleCats, 'Theory', 'Experiment', 'Phenomenon'])];
                     let catOpts = allCategories.map(cat => `<option value="${cat}" ${cond.val===cat?'selected':''}>${cat}</option>`).join('');
 
@@ -789,13 +793,9 @@
                 
                 if (newTag && newTag.trim() !== '') {
                     newTag = newTag.trim();
-                    
-                    const newOption = new Option(newTag, newTag);
-                    selectElement.add(newOption, selectElement.options[selectElement.options.length - 1]);
-                    selectElement.value = newTag;
-                    
                     currentRuleData[p][c].val = newTag;
                     saveCurrentEdit();
+                    editItem(currentEditId, 'quest'); 
                 } else {
                     selectElement.value = oldVal || ''; 
                 }
@@ -803,6 +803,30 @@
         } else {
             currentRuleData[p][c].val = selectElement.value;
             saveCurrentEdit();
+            editItem(currentEditId, 'quest'); 
+        }
+    }
+
+    function handleQuestCategoryChange(p, c, selectElement) {
+        const oldVal = currentRuleData[p][c].val; 
+        
+        if (selectElement.value === '_new') {
+            selectElement.blur(); 
+            setTimeout(() => {
+                let newCat = prompt(t('promptCat'));
+                if (newCat && newCat.trim() !== '') {
+                    newCat = newCat.trim();
+                    currentRuleData[p][c].val = newCat;
+                    saveCurrentEdit();
+                    editItem(currentEditId, 'quest'); 
+                } else {
+                    selectElement.value = oldVal || ''; 
+                }
+            }, 50);
+        } else {
+            currentRuleData[p][c].val = selectElement.value;
+            saveCurrentEdit();
+            editItem(currentEditId, 'quest');
         }
     }
 
