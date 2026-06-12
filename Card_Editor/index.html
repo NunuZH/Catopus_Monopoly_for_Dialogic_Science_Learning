@@ -432,7 +432,6 @@
             try { projects = JSON.parse(savedProjects); } catch(e){}
         }
 
-        // 自动迁移旧数据
         let oldSingleData = localStorage.getItem('questCardDatabase');
         if (oldSingleData && projects.length === 0) {
             let defaultId = 'proj_' + generateId();
