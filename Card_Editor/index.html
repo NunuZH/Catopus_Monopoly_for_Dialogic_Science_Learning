@@ -124,8 +124,9 @@
             <button class="btn-secondary" style="margin-right: 15px; padding: 6px 12px; font-size: 14px;" onclick="backToDashboard()" id="ui-btn-backDash">🔙 返回大厅</button>
             <h1 id="ui-title">⚙️ 教学剧本与卡牌编辑器</h1>
         </div>
-        <div class="header-btns">
-            <div class="dropdown">
+        <div class="header-btns" style="display: flex; align-items: center; gap: 15px;">
+            
+            <div class="dropdown" style="margin: 0;">
                 <button class="dropbtn" id="ui-btn-menu" onclick="toggleMenu(event)">⚙️ 菜单</button>
                 <div class="dropdown-content" id="myDropdown">
                     <button onclick="toggleLang()" id="ui-btn-lang">🌐 EN / 中文</button>
@@ -135,7 +136,19 @@
                     <button id="ui-btn-reset" onclick="resetDatabase()" style="color: var(--vermilion);">🗑 清空当前卡包</button>
                 </div>
             </div>
-            <button class="btn-highlight" onclick="exportExcel()" id="ui-btn-excel">📤 导出 Excel</button>
+            
+            <button class="btn-highlight" onclick="exportExcel()" id="ui-btn-excel" style="margin: 0;">📤 导出 Excel</button>
+
+            <div class="dropdown" style="margin: 0;">
+                <button class="dropbtn" style="background: var(--jade); border-color: var(--jade); font-weight: bold; margin: 0;" id="ui-btn-play" onclick="togglePlayMenu(event)">🎮 开始游戏</button>
+                <div class="dropdown-content" id="playDropdown">
+                    <button onclick="syncToGame()" id="ui-btn-sync" style="color: var(--vermilion); font-weight: bold;">📥 一键同步卡包</button>
+                    <div class="dropdown-divider"></div>
+                    <button onclick="window.open('https://nunuzh.github.io/Catopus_Monopoly_for_Dialogic_Science_Learning/Monopoly_V2_CN/index.html', '_blank')" id="ui-btn-play-cn">🇨🇳 进入中文游戏</button>
+                    <button onclick="window.open('https://nunuzh.github.io/Catopus_Monopoly_for_Dialogic_Science_Learning/Monopoly_V2_EN/index.html', '_blank')" id="ui-btn-play-en">🇬🇧 English Game</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -204,7 +217,7 @@
             btnReset: "🗑 清空当前卡包", warnReset: "⚠️ 这将删除当前卡包内所有卡片和课题。\n\n此操作无法撤销。\n\n确定继续吗？",
             msgReset: "已清空当前卡包数据", warnImport: "⚠️ 导入新数据将覆盖当前卡包的所有内容。\n\n是否继续？",
             btnOverwrite: "覆盖导入", btnAppend: "追加导入",
-            btnDuplicate: "📄 复制该卡片", msgAppend: "追加导入解析完毕！",
+            btnDuplicate: "📄 复制该卡片",
             dashTitle: "📚 我的卡牌主题集市", btnNewProj: "➕ 新建主题卡包", btnBackDash: "🔙 返回大厅",
             emptyDash: "还没有创建任何卡包哦，点击右上角新建一个吧！", promptProjName: "给你的新主题起个名字吧（例如：化学键主题基础卡包）：",
             warnDelProj: "⚠️ 确定要彻底删除这个卡包吗？\n所有卡片和课题都会丢失，不可恢复！", 
@@ -216,7 +229,10 @@
             copySuccessNew: "✅ 成功创建新卡包【{name}】，卡片复制已完成！",
             copyTargetAsk: "请输入你想复制到的【目标卡包序号】：\n\n",
             copySuccess: "✅ 成功发送到了【{name}】！",
-            copyFail: "❌ 识别不到你输入的序号哦，本次复制已被取消。"
+            copyFail: "❌ 识别不到你输入的序号哦，本次复制已被取消。",
+            syncSuccess: "数据已成功同步！\n\n请通过下拉菜单进入游戏页面，点击【⚙️系统设置-📥 一键同步卡包】即可开始游戏！",
+            btnPlay: "🎮 开始游戏", btnSync: "📥 一键同步卡包", playCN: "🇨🇳 进入中文游戏", playEN: "🇬🇧 English Game",
+            copySuffix: " (副本)", selectTag: "- 请选择标签 -", selectCat: "- 请选择分类 -"
         },
 
         en: {
@@ -248,7 +264,7 @@
             btnReset: "🗑 Clear Current Pack", warnReset: "⚠️ This will delete all cards and quests in this pack.\n\nThis action cannot be undone.\n\nContinue?",
             msgReset: "Current pack cleared.", warnImport: "⚠️ Importing new data will overwrite all current cards and quests in this pack.\n\nContinue?",
             btnOverwrite: "Overwrite", btnAppend: "Append Import",
-            btnDuplicate: "📄 Duplicate Card", msgAppend: "Append successful!",
+            btnDuplicate: "📄 Duplicate Card",
             dashTitle: "📚 My Card Sets Dashboard", btnNewProj: "➕ New Project", btnBackDash: "🔙 Back to Dashboard",
             emptyDash: "No projects yet. Click top right to create one!", promptProjName: "Enter a name for your new project:",
             warnDelProj: "⚠️ Delete this project permanently?\nAll cards and quests inside will be lost!", 
@@ -260,7 +276,10 @@
             copySuccessNew: "✅ Successfully created new pack [{name}], and the card has been copied!",
             copyTargetAsk: "Please enter the [Target Pack Number] you want to copy to:\n\n",
             copySuccess: "✅ Successfully sent to [{name}]!",
-            copyFail: "❌ Unrecognized number entered. Copying has been cancelled."
+            copyFail: "❌ Unrecognized number entered. Copying has been cancelled.",
+            syncSuccess: "🚀 Data sent!\n\nPlease switch to the Monopoly game page and click [⚙️Setting - 📥SyncPack] to start playing!",
+            btnPlay: "🎮 Play Game", btnSync: "📥 Sync Pack", playCN: "🇨🇳 Chinese Game", playEN: "🇬🇧 English Game",
+            copySuffix: " (Copy)", selectTag: "- Select Tag -", selectCat: "- Select Category -"
         }
     };
 
@@ -308,6 +327,10 @@
         document.getElementById('ui-dash-title').innerText = t('dashTitle');
         document.getElementById('ui-btn-new-proj').innerText = t('btnNewProj');
         document.getElementById('ui-btn-backDash').innerText = t('btnBackDash');
+        document.getElementById('ui-btn-play').innerText = t('btnPlay');
+        document.getElementById('ui-btn-sync').innerText = t('btnSync');
+        document.getElementById('ui-btn-play-cn').innerText = t('playCN');
+        document.getElementById('ui-btn-play-en').innerText = t('playEN');
     }
 
     // 母窗口业务
@@ -549,7 +572,7 @@
         clonedItem.id = generateId(); 
         
         if (!toOther) {
-            clonedItem.title = clonedItem.title + ' (Copy)'; 
+            clone.title = clone.title + t('copySuffix');
             if (currentEditType === 'quest') database.quests.push(clonedItem);
             else database.cards.push(clonedItem);
             
@@ -765,7 +788,7 @@
                     pathHTML += `
                         <div class="rule-cond">🏷
                             <select onchange="handleQuestTagChange(${pIdx}, ${cIdx}, this)" style="border-bottom: 1px dashed #999; width: auto; min-width: 80px;">
-                                <option value="" disabled ${!cond.val?'selected':''}>- Select Tag -</option>
+                                <option value="" disabled ${!cond.val?'selected':''}>${t('selectTag')}</option>
                                 ${tagOpts}
                                 <option value="_new">${t('newTag')}</option>
                             </select>
@@ -789,7 +812,7 @@
                             </select>
                             
                             <select onchange="handleQuestCategoryChange(${pIdx}, ${cIdx}, this)">
-                                <option value="" disabled ${!cond.val?'selected':''}>- Select Category -</option>
+                                <option value="" disabled ${!cond.val?'selected':''}>${t('selectCat')}</option>
                                 ${catOpts}
                                 <option value="_new">${t('newCat')}</option>
                             </select>
@@ -984,6 +1007,11 @@
         document.getElementById("myDropdown").classList.toggle("show");
     }
 
+    function togglePlayMenu(event) {
+        event.stopPropagation(); 
+        document.getElementById("playDropdown").classList.toggle("show");
+    }
+
     window.onclick = function(event) {
         if (!event.target.matches('.dropbtn')) {
             var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -1096,6 +1124,21 @@
             appendTag(selectedVal);
         }
     }
+    
+    function syncToGame() {
+        saveCurrentEdit(); 
+        let out = "";
+        database.quests.forEach(q => {
+            let tagStr = buildTargetTagString(q.rules);
+            out += `quest\t${q.title}\t${q.desc}\t\t${tagStr}\n`;
+        });
+        database.cards.forEach(c => {
+            out += `${c.category}\t${c.title}\t${c.desc}\t${c.tier}\t${c.tags}\n`;
+        });
+        localStorage.setItem('Catopus_Shared_Data', out.trim());
+        alert(t('syncSuccess'));
+    } 
+
     autoLoad();
     updateStaticUI();
 </script>
