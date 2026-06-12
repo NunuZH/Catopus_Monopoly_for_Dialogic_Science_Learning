@@ -15,6 +15,22 @@
         }
         body { margin: 0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; background: #e0e0e0; color: var(--ink); display: flex; height: 100vh; overflow: hidden; }
         
+        /* ================= 母窗口专属样式 ================= */
+        #dashboard-view { width: 100%; padding: 40px; max-width: 1200px; margin: 0 auto; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 2px solid #ccc; padding-bottom: 20px; }
+        .dash-header h1 { color: var(--ink); margin: 0; font-size: 28px; }
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .project-card { background: white; border: 2px solid #ccc; border-radius: 10px; padding: 20px; cursor: pointer; transition: 0.3s; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .project-card:hover { border-color: var(--blue); transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .project-card h3 { margin: 0 0 10px 0; color: var(--jade); font-size: 18px; }
+        .project-card p { color: #666; font-size: 13px; margin: 0 0 5px 0; line-height: 1.5; }
+        .project-time { font-size: 12px; color: #aaa; margin-top: 15px; display: block; }
+        .btn-del-proj { position: absolute; top: 15px; right: 15px; background: #fff0f0; border: 1px solid var(--vermilion); color: var(--vermilion); border-radius: 4px; cursor: pointer; font-size: 12px; padding: 2px 6px; transition: 0.2s; z-index: 10;}
+        .btn-del-proj:hover { background: var(--vermilion); color: white; }
+
+        /* ================= 原版编辑器样式 ================= */
+        #editor-view { width: 100%; height: 100vh; position: relative; display: flex; flex-direction: column; }
+        
         /* 顶部导航栏 */
         .header { position: absolute; top: 0; left: 0; width: 100%; height: 60px; background: var(--ink); color: var(--paper); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .header h1 { margin: 0; font-size: 20px; letter-spacing: 1px; font-weight: 600; }
@@ -25,30 +41,14 @@
         .dropbtn { background: transparent; border: 1px solid var(--paper); color: var(--paper); padding: 6px 15px; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 14px; }
         .dropbtn:hover { background: var(--paper); color: var(--ink); }
         .dropdown-content { 
-            display: none; 
-            position: absolute; 
-            right: 0; 
-            top: 100%; 
-            background-color: white; 
-            min-width: 140px; 
-            box-shadow: 0px 8px 20px rgba(0,0,0,0.15); 
-            z-index: 200; 
-            border-radius: 6px; 
-            overflow: hidden; 
-            margin-top: 5px; 
-            border: 1px solid #ccc;
+            display: none; position: absolute; right: 0; top: 100%; background-color: white; 
+            min-width: 140px; box-shadow: 0px 8px 20px rgba(0,0,0,0.15); z-index: 200; 
+            border-radius: 6px; overflow: hidden; margin-top: 5px; border: 1px solid #ccc;
         }
         .header-btns .dropdown-content button { 
-            color: var(--ink); 
-            padding: 10px 16px; 
-            display: block; 
-            width: 100%; 
-            text-align: left; 
-            border: none; 
-            margin: 0; 
-            border-radius: 0; 
-            background: white; 
-            font-size: 14px;
+            color: var(--ink); padding: 10px 16px; display: block; width: 100%; 
+            text-align: left; border: none; margin: 0; border-radius: 0; 
+            background: white; font-size: 14px;
         }
         .header-btns .dropdown-content button:hover { background-color: #f0f8ff; color: var(--blue); }
         .header-btns .dropdown-content .dropdown-divider { height: 1px; background-color: #eee; margin: 2px 0; }
@@ -67,7 +67,7 @@
         .list-item:hover { border-color: var(--blue); background: #f0f8ff; }
         .list-item.active { background: var(--blue); color: white; border-color: var(--blue); }
         
-        /* 右侧：编辑区 (修复了Flex塌陷问题) */
+        /* 右侧：编辑区 */
         .editor-area { flex: 1; background: var(--paper); padding: 40px; overflow-y: auto; display: block; }
         .editor-content { width: 100%; max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid #ccc; position: relative; height: fit-content; min-height: 400px; }
         
@@ -77,7 +77,7 @@
         .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid #ccc; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 15px; transition: 0.3s; }
         .form-group input:focus, .form-group textarea:focus { border-color: var(--blue); outline: none; background: #f8fbff; }
         
-        /* 无代码悬赏规则生成器 (胶囊式紧凑布局) */
+        /* 规则生成器 */
         .rule-builder { border: 2px dashed #bbb; padding: 15px; background: #fffcf5; border-radius: 8px; }
         .rule-path { border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; background: white; border-radius: 6px; position: relative; }
         .rule-cond-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
@@ -99,45 +99,62 @@
         
         .btn-primary { background: var(--blue); color: white; border: none; padding: 10px 20px; font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-danger { background: var(--vermilion); color: white; border: none; padding: 10px 20px; font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-secondary { background: #e8e8e8; color: var(--ink); border: none; padding: 10px 20px; font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-lang-dash { background: white; border: 2px solid var(--blue); color: var(--blue); padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 15px; transition: 0.2s;}
+        .btn-lang-dash:hover { background: var(--blue); color: white; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1 id="ui-title">⚙️ 教学剧本与卡牌编辑器</h1>
-    <div class="header-btns">
-        <div class="dropdown">
-            <button class="dropbtn" id="ui-btn-menu" onclick="toggleMenu(event)">⚙️ 菜单</button>
-            
-            <div class="dropdown-content" id="myDropdown">
-                <button onclick="toggleLang()" id="ui-btn-lang">🌐 EN / 中文</button>
-                <button onclick="openImportModal()" id="ui-btn-import">📥 导入数据</button>
-                <button onclick="exportJSON()" id="ui-btn-json">💾 导出 JSON</button>
-                <div class="dropdown-divider"></div>
-                <button id="ui-btn-reset" onclick="resetDatabase()" style="color: var(--vermilion);">🗑 清空数据</button>
-            </div>
+<div id="dashboard-view">
+    <div class="dash-header">
+        <h1 id="ui-dash-title">📚 我的卡牌主题集市</h1>
+        <div class="dash-btns" style="display: flex; align-items: center;">
+            <button class="btn-lang-dash" onclick="toggleLang()" id="ui-btn-lang-dash">🌐 EN / 中文</button>
+            <button class="btn-primary" onclick="createNewProject()" style="background: var(--jade);" id="ui-btn-new-proj">➕ 新建主题卡包</button>
         </div>
-        
-        <button class="btn-highlight" onclick="exportExcel()" id="ui-btn-excel">📤 导出 Excel</button>
     </div>
+    <div class="project-grid" id="project-list-container">
+        </div>
 </div>
 
-<div class="container">
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <span id="ui-archive">📚 档案柜</span>
-            <div>
-                <button class="btn-add btn-add-quest" onclick="createNew('quest')" id="ui-btn-quest">🎯 课题</button>
-                <button class="btn-add" onclick="createNew('card')" id="ui-btn-card">🃏 卡片</button>
-            </div>
+<div id="editor-view" style="display: none;">
+    <div class="header">
+        <div style="display: flex; align-items: center;">
+            <button class="btn-secondary" style="margin-right: 15px; padding: 6px 12px; font-size: 14px;" onclick="backToDashboard()" id="ui-btn-backDash">🔙 返回大厅</button>
+            <h1 id="ui-title">⚙️ 教学剧本与卡牌编辑器</h1>
         </div>
-        <div class="list-container" id="sidebar-list">
+        <div class="header-btns">
+            <div class="dropdown">
+                <button class="dropbtn" id="ui-btn-menu" onclick="toggleMenu(event)">⚙️ 菜单</button>
+                <div class="dropdown-content" id="myDropdown">
+                    <button onclick="toggleLang()" id="ui-btn-lang">🌐 EN / 中文</button>
+                    <button onclick="openImportModal()" id="ui-btn-import">📥 导入数据</button>
+                    <button onclick="exportJSON()" id="ui-btn-json">💾 导出当前 JSON</button>
+                    <div class="dropdown-divider"></div>
+                    <button id="ui-btn-reset" onclick="resetDatabase()" style="color: var(--vermilion);">🗑 清空当前卡包</button>
+                </div>
             </div>
+            <button class="btn-highlight" onclick="exportExcel()" id="ui-btn-excel">📤 导出 Excel</button>
+        </div>
     </div>
-    
-    <div class="editor-area">
-        <div class="editor-content" id="editor-content">
-            <h2 id="ui-empty" style="color:#ccc; text-align:center; margin-top:150px;">👈 请在左侧选择或新建项目/卡片进行编辑</h2>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <span id="ui-archive">📚 档案柜</span>
+                <div>
+                    <button class="btn-add btn-add-quest" onclick="createNew('quest')" id="ui-btn-quest">🎯 课题</button>
+                    <button class="btn-add" onclick="createNew('card')" id="ui-btn-card">🃏 卡片</button>
+                </div>
+            </div>
+            <div class="list-container" id="sidebar-list"></div>
+        </div>
+        
+        <div class="editor-area">
+            <div class="editor-content" id="editor-content">
+                <h2 id="ui-empty" style="color:#ccc; text-align:center; margin-top:150px;">👈 请在左侧选择或新建项目/卡片进行编辑</h2>
+            </div>
         </div>
     </div>
 </div>
@@ -148,17 +165,18 @@
         <p id="io-desc" style="color:#666;">请在此处粘贴或复制数据。</p>
         <textarea id="io-textarea"></textarea>
         <div style="margin-top: 20px;">
-            <button class="btn-primary" id="io-confirm-btn" onclick="confirmImport()">确认导入</button>
-            <button class="btn-danger" id="io-close-btn" onclick="closeModal()" style="margin-left: 10px;">关闭</button>
+            <button class="btn-danger" id="io-confirm-btn" onclick="confirmImport(true)">覆盖导入</button>
+            <button class="btn-primary" id="io-append-btn" onclick="confirmImport(false)" style="margin-left: 10px;">追加导入</button>
+            <button class="btn-secondary" id="io-close-btn" onclick="closeModal()" style="margin-left: 10px;">关闭</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ====== 字典配置 ======
+    // ====== 字典 ======
     const dict = {
         zh: {
-            btnMenu: "⚙️ 菜单", title: "教学剧本与卡牌编辑器", btnImport: "📥 导入数据", btnJson: "💾 导出 JSON", btnExcel: "📤 导出 Excel",
+            btnMenu: "⚙️ 菜单", title: "教学剧本与卡牌编辑器", btnImport: "📥 导入数据", btnJson: "💾 导出当前 JSON", btnExcel: "📤 导出 Excel",
             archive: "📚 档案柜", btnQuest: "🎯 课题", btnCard: "🃏 卡片",
             empty: "👈 请在左侧选择或新建项目/卡片进行编辑",
             catQuests: "🎯 课题项目", catCards: "📁 卡片分类",
@@ -183,9 +201,24 @@
             btnConfirm: "确认导入", btnClose: "关闭", msgImp: "导入解析完毕！",
             mustCat: "🎯 必须包含", banCat: "🚫 禁止包含", 
             addTagCond: "🏷 添加标签条件", addCatCond: "📂 添加类型条件", 
-            btnReset: "🗑 清空数据", warnReset: "⚠️ 这将删除所有卡片、课题和存档。\n\n此操作无法撤销。\n\n确定继续吗？",
-            msgReset: "已清空所有数据", warnImport: "⚠️ 导入新数据将覆盖当前所有卡片、课题和规则。\n\n是否继续？"
+            btnReset: "🗑 清空当前卡包", warnReset: "⚠️ 这将删除当前卡包内所有卡片和课题。\n\n此操作无法撤销。\n\n确定继续吗？",
+            msgReset: "已清空当前卡包数据", warnImport: "⚠️ 导入新数据将覆盖当前卡包的所有内容。\n\n是否继续？",
+            btnOverwrite: "覆盖导入", btnAppend: "追加导入",
+            btnDuplicate: "📄 复制该卡片", msgAppend: "追加导入解析完毕！",
+            dashTitle: "📚 我的卡牌主题集市", btnNewProj: "➕ 新建主题卡包", btnBackDash: "🔙 返回大厅",
+            emptyDash: "还没有创建任何卡包哦，点击右上角新建一个吧！", promptProjName: "给你的新主题起个名字吧（例如：化学键主题基础卡包）：",
+            warnDelProj: "⚠️ 确定要彻底删除这个卡包吗？\n所有卡片和课题都会丢失，不可恢复！", 
+            dashQuestCount: "🎯 课题数: ", dashCardCount: "🃏 卡片数: ", dashLastUpdate: "最后修改: ",
+            btnDelProj: "删除", defaultOldProj: "默认卡包",
+            copyAsk: "🤔 要把这张卡片复制到哪里呢？\n\n点击 [确定] -> 发送到其他卡包\n点击 [取消] -> 在当前卡包创建副本",
+            copyOnlyOne: "💡 目前大厅里只有这一个卡包哦。\n是否立即新建一个主题卡包，并把这张卡发过去？",
+            copyNewName: "给新的卡包起个名字吧：",
+            copySuccessNew: "✅ 成功创建新卡包【{name}】，卡片复制已完成！",
+            copyTargetAsk: "请输入你想复制到的【目标卡包序号】：\n\n",
+            copySuccess: "✅ 成功发送到了【{name}】！",
+            copyFail: "❌ 识别不到你输入的序号哦，本次复制已被取消。"
         },
+
         en: {
             btnMenu: "⚙️ Menu", title: "Scenario & Card Editor", btnImport: "📥 Import", btnJson: "💾 Export JSON", btnExcel: "📤 Export Excel",
             archive: "📚 Archive", btnQuest: "🎯 Quest", btnCard: "🃏 Card",
@@ -212,22 +245,48 @@
             btnConfirm: "Confirm", btnClose: "Close", msgImp: "Import successful!",
             mustCat: "🎯 Must Include", banCat: "🚫 MustNot Include",
             addTagCond: "🏷 Add Tag Cond", addCatCond: "📂 Add Category Cond",
-            btnReset: "🗑 Clear Data", warnReset: "⚠️ This will delete all cards, quests, and saves.\n\nThis action cannot be undone.\n\nContinue?",
-            msgReset: "All data cleared.", warnImport: "⚠️ Importing new data will overwrite all current cards, quests, and rules.\n\nContinue?"
+            btnReset: "🗑 Clear Current Pack", warnReset: "⚠️ This will delete all cards and quests in this pack.\n\nThis action cannot be undone.\n\nContinue?",
+            msgReset: "Current pack cleared.", warnImport: "⚠️ Importing new data will overwrite all current cards and quests in this pack.\n\nContinue?",
+            btnOverwrite: "Overwrite", btnAppend: "Append Import",
+            btnDuplicate: "📄 Duplicate Card", msgAppend: "Append successful!",
+            dashTitle: "📚 My Card Sets Dashboard", btnNewProj: "➕ New Project", btnBackDash: "🔙 Back to Dashboard",
+            emptyDash: "No projects yet. Click top right to create one!", promptProjName: "Enter a name for your new project:",
+            warnDelProj: "⚠️ Delete this project permanently?\nAll cards and quests inside will be lost!", 
+            dashQuestCount: "🎯 Quests: ", dashCardCount: "🃏 Cards: ", dashLastUpdate: "Last updated: ",
+            btnDelProj: "Delete", defaultOldProj: "Default Pack (Migrated)",
+            copyAsk: "🤔 Where would you like to copy this card?\n\nClick [OK] -> Send to another pack\nClick [Cancel] -> Create a copy in the current pack",
+            copyOnlyOne: "💡 There is currently only one pack available.\nWould you like to create a new pack right now and send this card there?",
+            copyNewName: "Let's give the new pack a name:",
+            copySuccessNew: "✅ Successfully created new pack [{name}], and the card has been copied!",
+            copyTargetAsk: "Please enter the [Target Pack Number] you want to copy to:\n\n",
+            copySuccess: "✅ Successfully sent to [{name}]!",
+            copyFail: "❌ Unrecognized number entered. Copying has been cancelled."
         }
     };
 
     let currentLang = 'zh';
     function t(key) { return dict[currentLang][key]; }
 
+    // 母窗口核心数据 
+    let projects = []; 
+    let currentProjectId = null;
+    let database = { quests: [], cards: [] };
+    let currentEditId = null;
+    let currentEditType = null;
+
+    // 语言切换
     function toggleLang() {
         currentLang = currentLang === 'zh' ? 'en' : 'zh';
         updateStaticUI();
-        renderSidebar();
-        if (currentEditId) {
-            editItem(currentEditId, currentEditType);
+        if (currentProjectId) {
+            renderSidebar();
+            if (currentEditId) {
+                editItem(currentEditId, currentEditType);
+            } else {
+                document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+            }
         } else {
-            document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+            renderDashboard();
         }
     }
 
@@ -243,11 +302,146 @@
         document.getElementById('io-close-btn').innerText = t('btnClose');
         document.getElementById('ui-btn-reset').innerText = t('btnReset');
         document.getElementById('ui-btn-menu').innerText = t('btnMenu');
+        document.getElementById('io-confirm-btn').innerText = t('btnOverwrite');
+        const appendBtn = document.getElementById('io-append-btn');
+        if(appendBtn) appendBtn.innerText = t('btnAppend');
+        document.getElementById('ui-dash-title').innerText = t('dashTitle');
+        document.getElementById('ui-btn-new-proj').innerText = t('btnNewProj');
+        document.getElementById('ui-btn-backDash').innerText = t('btnBackDash');
     }
-    
-    let database = { quests: [], cards: [] };
-    let currentEditId = null;
-    let currentEditType = null;
+
+    // 母窗口业务
+    function renderDashboard() {
+        const container = document.getElementById('project-list-container');
+        container.innerHTML = '';
+        
+        if (projects.length === 0) {
+            container.innerHTML = `<h3 style="color:#999; grid-column: 1 / -1; text-align:center; margin-top: 50px;">${t('emptyDash')}</h3>`;
+            return;
+        }
+
+        projects.forEach(p => {
+            container.innerHTML += `
+                <div class="project-card" onclick="openProject('${p.id}')">
+                    <button class="btn-del-proj" onclick="deleteProject('${p.id}', event)">${t('btnDelProj')}</button>
+                    <h3>${p.name}</h3>
+                    <p>${t('dashQuestCount')}${p.questCount || 0}</p>
+                    <p>${t('dashCardCount')}${p.cardCount || 0}</p>
+                    <span class="project-time">${t('dashLastUpdate')}${p.updated || '-'}</span>
+                </div>
+            `;
+        });
+    }
+
+    function createNewProject() {
+        let name = prompt(t('promptProjName'));
+        if (!name || !name.trim()) return;
+        
+        let newProj = {
+            id: 'proj_' + generateId(),
+            name: name.trim(),
+            updated: new Date().toLocaleString(),
+            questCount: 0,
+            cardCount: 0
+        };
+        projects.push(newProj);
+        localStorage.setItem('my_projects_list', JSON.stringify(projects));
+        localStorage.setItem('project_data_' + newProj.id, JSON.stringify({ quests: [], cards: [] }));
+        
+        renderDashboard();
+    }
+
+    function openProject(id) {
+        currentProjectId = id;
+        
+        let savedData = localStorage.getItem('project_data_' + id);
+        if (savedData) {
+            database = JSON.parse(savedData);
+        } else {
+            database = { quests: [], cards: [] }; 
+        }
+
+        currentEditId = null;
+        currentEditType = null;
+        document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+
+        document.getElementById('dashboard-view').style.display = 'none';
+        document.getElementById('editor-view').style.display = 'flex';
+        
+        renderSidebar();
+    }
+
+    function backToDashboard() {
+        saveCurrentEdit(); 
+        currentProjectId = null;
+        document.getElementById('editor-view').style.display = 'none';
+        document.getElementById('dashboard-view').style.display = 'block';
+        renderDashboard();
+    }
+
+    function deleteProject(id, event) {
+        event.stopPropagation(); 
+        if (!confirm(t('warnDelProj'))) return;
+        
+        projects = projects.filter(p => p.id !== id);
+        localStorage.setItem('my_projects_list', JSON.stringify(projects));
+        localStorage.removeItem('project_data_' + id);
+        
+        renderDashboard();
+    }
+
+    function autoSave() { 
+        if (!currentProjectId) return;
+        localStorage.setItem('project_data_' + currentProjectId, JSON.stringify(database));
+        
+        let proj = projects.find(p => p.id === currentProjectId);
+        if (proj) {
+            proj.updated = new Date().toLocaleString();
+            proj.cardCount = database.cards.length;
+            proj.questCount = database.quests.length;
+        }
+        localStorage.setItem('my_projects_list', JSON.stringify(projects));
+    }
+
+    function autoLoad() {
+        let savedProjects = localStorage.getItem('my_projects_list');
+        if (savedProjects) {
+            try { projects = JSON.parse(savedProjects); } catch(e){}
+        }
+
+        // 自动迁移旧数据
+        let oldSingleData = localStorage.getItem('questCardDatabase');
+        if (oldSingleData && projects.length === 0) {
+            let defaultId = 'proj_' + generateId();
+            let oldDb = JSON.parse(oldSingleData);
+            projects.push({
+                id: defaultId,
+                name: t('defaultOldProj'),
+                updated: new Date().toLocaleString(),
+                questCount: oldDb.quests ? oldDb.quests.length : 0,
+                cardCount: oldDb.cards ? oldDb.cards.length : 0
+            });
+            localStorage.setItem('project_data_' + defaultId, oldSingleData);
+            localStorage.setItem('my_projects_list', JSON.stringify(projects));
+            // localStorage.removeItem('questCardDatabase'); // 清理旧档
+        }
+
+        renderDashboard();
+    }
+
+    function resetDatabase() {
+        if (!confirm(t('warnReset'))) return;
+        database = { quests: [], cards: [] };
+        if (currentProjectId) {
+            localStorage.setItem('project_data_' + currentProjectId, JSON.stringify(database));
+        }
+        currentEditId = null;
+        currentEditType = null;
+        document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+        renderSidebar();
+        autoSave();
+        alert(t('msgReset'));
+    }
 
     function generateId() { return Math.random().toString(36).substr(2, 8); }
 
@@ -341,15 +535,85 @@
         renderSidebar();
     }
 
-    function autoSave() { localStorage.setItem('questCardDatabase', JSON.stringify(database));}
-    
-    function autoLoad() {
-        let saved = localStorage.getItem('questCardDatabase');
-        if (!saved) return;
-        try {
-            database = JSON.parse(saved);
-        } catch (e) {
-            console.error(e);
+    function duplicateCurrent() {
+        if (!currentEditId) return;
+        saveCurrentEdit(); 
+        
+        let toOther = confirm(t('copyAsk'));
+        
+        let currentItem = (currentEditType === 'quest') 
+            ? database.quests.find(q => q.id === currentEditId) 
+            : database.cards.find(c => c.id === currentEditId);
+            
+        let clonedItem = JSON.parse(JSON.stringify(currentItem));
+        clonedItem.id = generateId(); 
+        
+        if (!toOther) {
+            clonedItem.title = clonedItem.title + ' (Copy)'; 
+            if (currentEditType === 'quest') database.quests.push(clonedItem);
+            else database.cards.push(clonedItem);
+            
+            autoSave();
+            editItem(clonedItem.id, currentEditType); 
+            return;
+        }
+
+        let otherProjs = projects.filter(p => p.id !== currentProjectId);
+        if (otherProjs.length === 0) {
+            let createNew = confirm(t('copyOnlyOne'));
+            if (!createNew) return; 
+            
+            let name = prompt(t('copyNewName'));
+            if (!name || !name.trim()) return;
+            
+            let newProj = {
+                id: 'proj_' + generateId(),
+                name: name.trim(),
+                updated: new Date().toLocaleString(),
+                questCount: currentEditType === 'quest' ? 1 : 0,
+                cardCount: currentEditType === 'card' ? 1 : 0
+            };
+            projects.push(newProj);
+            
+            let newData = { quests: [], cards: [] };
+            if (currentEditType === 'quest') newData.quests.push(clonedItem);
+            else newData.cards.push(clonedItem);
+            
+            localStorage.setItem('project_data_' + newProj.id, JSON.stringify(newData));
+            localStorage.setItem('my_projects_list', JSON.stringify(projects));
+            
+            alert(t('copySuccessNew').replace('{name}', newProj.name));
+            return;
+        }
+
+        let msg = t('copyTargetAsk');
+        otherProjs.forEach((p, index) => {
+            msg += `${index + 1}. ${p.name}\n`;
+        });
+        
+        let choice = prompt(msg);
+        if (!choice || !choice.trim()) return; 
+        
+        let targetIndex = parseInt(choice) - 1;
+        if (targetIndex >= 0 && targetIndex < otherProjs.length) {
+            let targetProj = otherProjs[targetIndex];
+            let targetDataStr = localStorage.getItem('project_data_' + targetProj.id);
+            let targetData = targetDataStr ? JSON.parse(targetDataStr) : { quests: [], cards: [] };
+            
+            if (currentEditType === 'quest') {
+                targetData.quests.push(clonedItem);
+                targetProj.questCount = targetData.quests.length; 
+            } else {
+                targetData.cards.push(clonedItem);
+                targetProj.cardCount = targetData.cards.length; 
+            }
+            
+            localStorage.setItem('project_data_' + targetProj.id, JSON.stringify(targetData));
+            localStorage.setItem('my_projects_list', JSON.stringify(projects)); 
+            
+            alert(t('copySuccess').replace('{name}', targetProj.name));
+        } else {
+            alert(t('copyFail'));
         }
     }
 
@@ -374,7 +638,7 @@
             : '';
             
         container.innerHTML = `
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
                 <h2 style="color:var(--jade); margin:0;">🃏 ${t('cTitle').split(' ')[0]}</h2>
             </div>
             <div class="form-group">
@@ -420,6 +684,7 @@
             </div>
             
             <div style="text-align:right; border-top: 1px solid #ccc; padding-top: 20px; margin-top: 20px;">
+                <button class="btn-primary" onclick="duplicateCurrent()" style="margin-right: 15px; background:var(--ochre);">${t('btnDuplicate')}</button>
                 <button class="btn-danger" onclick="deleteCurrent()">${t('delCard')}</button>
             </div>
         `;
@@ -434,7 +699,7 @@
             ? cardMatches.map(c => `<span onclick="openCardEditor('${c.id}')" style="background:#fff3e0; padding:3px 8px; border-radius:4px; margin-right:5px; border:1px solid #ffe0b2; font-size:12px; display:inline-block; margin-bottom:5px; cursor:pointer;">🃏 ${c.title}</span>`).join('') 
             : '';
         container.innerHTML = `
-            <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 20px; display:flex; justify-content:space-between; align-items:center;">
                 <h2 style="color:var(--vermilion); margin:0;">🎯 ${t('qTitle').split(' ')[0]}</h2>
             </div>
             <div class="form-group">
@@ -457,6 +722,7 @@
             </div>
 
             <div style="text-align:right; border-top: 1px solid #ccc; padding-top: 20px; margin-top: 20px;">
+                <button class="btn-primary" onclick="duplicateCurrent()" style="margin-right: 15px; background:var(--ochre);">${t('btnDuplicate')}</button>
                 <button class="btn-danger" onclick="deleteCurrent()">${t('delQuest')}</button>
             </div>
         `;
@@ -553,18 +819,8 @@
     function removePath(p) { currentRuleData.splice(p, 1); renderRuleBuilder(); }
     
     function addCond(p, kind='tag') {
-        if (kind === 'tag') {
-            currentRuleData[p].push({
-                scope:'tag',
-                val:''
-            });
-        } else {
-            currentRuleData[p].push({
-                scope:'category',
-                type:'must',
-                val:''
-            });
-        }
+        if (kind === 'tag') { currentRuleData[p].push({ scope:'tag', val:'' }); } 
+        else { currentRuleData[p].push({ scope:'category', type:'must', val:'' }); }
         renderRuleBuilder();
     }
     
@@ -592,20 +848,22 @@
         document.getElementById('io-desc').innerText = t('ioImpDesc');
         document.getElementById('io-textarea').value = "";
         document.getElementById('io-confirm-btn').style.display = "inline-block";
+        document.getElementById('io-append-btn').style.display = "inline-block"; 
         document.getElementById('io-modal').style.display = "flex";
     }
 
     function closeModal() { document.getElementById('io-modal').style.display = "none"; }
 
-    function confirmImport() {
+    function confirmImport(isOverwrite) {
         const text = document.getElementById('io-textarea').value.trim();
         if(!text) return;
         const lines = text.split('\n');
 
-        if(!confirm(t('warnImport'))){ return; }
-        
-        database.quests = [];
-        database.cards = [];
+        if (isOverwrite) {
+            if(!confirm(t('warnImport'))){ return; }
+            database.quests = [];
+            database.cards = [];
+        }
         
         lines.forEach(line => {
             const parts = line.split(/\t/);
@@ -645,11 +903,13 @@
         });
         
         closeModal();
-        currentEditId = null;
-        document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+        if (isOverwrite) {
+            currentEditId = null;
+            document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
+        }
         renderSidebar();
         autoSave();
-        alert(t('msgImp'));
+        alert(isOverwrite ? t('msgImp') : t('msgAppend'));
     }
 
     function exportJSON() {
@@ -658,26 +918,25 @@
         document.getElementById('io-desc').innerText = t('ioJsonDesc');
         document.getElementById('io-textarea').value = JSON.stringify(database, null, 2);
         document.getElementById('io-confirm-btn').style.display = "none";
+        document.getElementById('io-append-btn').style.display = "none"; 
         document.getElementById('io-modal').style.display = "flex";
     }
 
     function exportExcel() {
         saveCurrentEdit();
         let out = "";
-        
         database.quests.forEach(q => {
             let tagStr = buildTargetTagString(q.rules);
             out += `quest\t${q.title}\t${q.desc}\t\t${tagStr}\n`;
         });
-        
         database.cards.forEach(c => {
             out += `${c.category}\t${c.title}\t${c.desc}\t${c.tier}\t${c.tags}\n`;
         });
-
         document.getElementById('io-title').innerText = t('ioExcTitle');
         document.getElementById('io-desc').innerHTML = t('ioExcDesc');
         document.getElementById('io-textarea').value = out.trim();
         document.getElementById('io-confirm-btn').style.display = "none";
+        document.getElementById('io-append-btn').style.display = "none"; 
         document.getElementById('io-modal').style.display = "flex";
     }
     
@@ -717,24 +976,8 @@
         });
     }
 
-    function openQuestEditor(questId) {
-        editItem(questId, 'quest');
-    }
-
-    function openCardEditor(cardId) {
-        editItem(cardId, 'card');
-    }
-
-    function resetDatabase() {
-        if (!confirm(t('warnReset'))) return;
-        database = { quests: [], cards: [] };
-        localStorage.removeItem('questCardDatabase');
-        currentEditId = null;
-        currentEditType = null;
-        document.getElementById('editor-content').innerHTML = `<h2 style="color:#ccc; text-align:center; margin-top:150px;">${t('empty')}</h2>`;
-        renderSidebar();
-        alert(t('msgReset'));
-    }
+    function openQuestEditor(questId) { editItem(questId, 'quest'); }
+    function openCardEditor(cardId) { editItem(cardId, 'card'); }
 
     function toggleMenu(event) {
         event.stopPropagation(); 
@@ -758,13 +1001,10 @@
         if (!item) return;
 
         const oldCat = item.category;
-
         if (selectElement.value === '_new') {
             selectElement.blur(); 
-            
             setTimeout(() => {
                 let newCat = prompt(t('promptCat'));
-                
                 if (newCat && newCat.trim() !== '') {
                     newCat = newCat.trim();
                     const newOption = new Option(newCat, newCat);
@@ -784,21 +1024,16 @@
     
     function handleQuestTagChange(p, c, selectElement) {
         const oldVal = currentRuleData[p][c].val; 
-        
         if (selectElement.value === '_new') {
             selectElement.blur(); 
-            
             setTimeout(() => {
                 let newTag = prompt(t('promptTag'));
-                
                 if (newTag && newTag.trim() !== '') {
                     newTag = newTag.trim();
                     currentRuleData[p][c].val = newTag;
                     saveCurrentEdit();
                     editItem(currentEditId, 'quest'); 
-                } else {
-                    selectElement.value = oldVal || ''; 
-                }
+                } else { selectElement.value = oldVal || ''; }
             }, 50);
         } else {
             currentRuleData[p][c].val = selectElement.value;
@@ -809,7 +1044,6 @@
 
     function handleQuestCategoryChange(p, c, selectElement) {
         const oldVal = currentRuleData[p][c].val; 
-        
         if (selectElement.value === '_new') {
             selectElement.blur(); 
             setTimeout(() => {
@@ -819,9 +1053,7 @@
                     currentRuleData[p][c].val = newCat;
                     saveCurrentEdit();
                     editItem(currentEditId, 'quest'); 
-                } else {
-                    selectElement.value = oldVal || ''; 
-                }
+                } else { selectElement.value = oldVal || ''; }
             }, 50);
         } else {
             currentRuleData[p][c].val = selectElement.value;
@@ -858,18 +1090,14 @@
                 let newTag = prompt(t('promptTag'));
                 if (newTag && newTag.trim() !== '') {
                     appendTag(newTag.trim());
-                } else {
-                    selectElement.value = ''; 
-                }
+                } else { selectElement.value = ''; }
             }, 50);
         } else {
             appendTag(selectedVal);
         }
     }
-
     autoLoad();
     updateStaticUI();
-    renderSidebar();
 </script>
 </body>
 </html>
