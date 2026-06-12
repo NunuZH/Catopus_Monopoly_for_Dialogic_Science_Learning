@@ -131,14 +131,13 @@
                 <div class="dropdown-content" id="myDropdown">
                     <button onclick="toggleLang()" id="ui-btn-lang">🌐 EN / 中文</button>
                     <button onclick="openImportModal()" id="ui-btn-import">📥 导入数据</button>
-                    <button onclick="exportJSON()" id="ui-btn-json">💾 导出当前 JSON</button>
+                    <button onclick="exportExcel()" id="ui-btn-excel">📤 导出 Excel</button>
+                    <button onclick="exportJSON()" id="ui-btn-json">💾 导出 JSON</button>
                     <div class="dropdown-divider"></div>
                     <button id="ui-btn-reset" onclick="resetDatabase()" style="color: var(--vermilion);">🗑 清空当前卡包</button>
                 </div>
             </div>
             
-            <button class="btn-highlight" onclick="exportExcel()" id="ui-btn-excel" style="margin: 0;">📤 导出 Excel</button>
-
             <div class="dropdown" style="margin: 0;">
                 <button class="dropbtn" style="background: var(--jade); border-color: var(--jade); font-weight: bold; margin: 0;" id="ui-btn-play" onclick="togglePlayMenu(event)">🎮 开始游戏</button>
                 <div class="dropdown-content" id="playDropdown">
@@ -189,7 +188,7 @@
     // ====== 字典 ======
     const dict = {
         zh: {
-            btnMenu: "⚙️ 菜单", title: "教学剧本与卡牌编辑器", btnImport: "📥 导入数据", btnJson: "💾 导出当前 JSON", btnExcel: "📤 导出 Excel",
+            btnMenu: "⚙️ 菜单", title: "教学剧本与卡牌编辑器", btnImport: "📥 导入数据", btnJson: "💾 导出 JSON", btnExcel: "📤 导出 Excel",
             archive: "📚 档案柜", btnQuest: "🎯 课题", btnCard: "🃏 卡片",
             empty: "👈 请在左侧选择或新建项目/卡片进行编辑",
             catQuests: "🎯 课题项目", catCards: "📁 卡片分类",
